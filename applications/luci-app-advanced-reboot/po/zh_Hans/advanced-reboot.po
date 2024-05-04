@@ -214,14 +214,14 @@ msgstr "警告：无法获取设备信息！"
 #~ msgid "Warning: Device (%s) is unknown or isn't a dual-partition device!"
 #~ msgstr "警告：设备（%s）未知或不是双分区设备！"
 
-#~ msgid "Alternative"
-#~ msgstr "备用"
+msgid "Alternative"
+msgstr "备用"
 
 #~ msgid "Changes applied."
 #~ msgstr "更改已应用。"
 
-#~ msgid "Current"
-#~ msgstr "当前"
+msgid "Current"
+msgstr "当前"
 
 #~ msgid "Loading"
 #~ msgstr "加载中"
