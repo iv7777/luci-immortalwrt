@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ "$ACTION" = "ifup" ] && [ "$INTERFACE" = "wan" ]; then
+	logger -p notice -t luci-zerotier "Checking zerotier status due to $ACTION of $INTERFACE ($DEVICE)"
+	# Check if ZeroTier is running
+	if /etc/init.d/zerotier enabled && pidof zerotier-one > /dev/null; then
+		logger -p notice -t luci-zerotier "Restarting zerotier (already running)"
+		/etc/init.d/zerotier restart
+	else
+		logger -p notice -t luci-zerotier "Zerotier not running, skipping restart"
+	fi
+fi
