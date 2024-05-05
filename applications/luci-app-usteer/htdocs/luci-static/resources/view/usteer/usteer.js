@@ -579,7 +579,7 @@ return view.extend({
 		o.datatype = 'uinteger';
 
 		o = s.taboption('settings', form.Value, 'load_kick_reason_code', _('Load kick reason code'),
-			_('Reason code on client kick based on channel load.') + ' Default: WLAN_REASON_DISASSOC_AP_BUSY)'
+			_('Reason code on client kick based on channel load.') + _('Default: WLAN_REASON_DISASSOC_AP_BUSY')
 		);
 		o.optional = true;
 		o.placeholder = 5;
