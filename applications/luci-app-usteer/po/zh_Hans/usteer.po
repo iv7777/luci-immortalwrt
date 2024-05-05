@@ -593,3 +593,18 @@ msgstr "默认 true"
 #: applications/luci-app-usteer/htdocs/luci-static/resources/view/usteer/usteer.js:626
 msgid "empty means all"
 msgstr "留空表示全部"
+
+#~ msgid "Timeout (in 100ms beacon intervals) for client roam requests"
+#~ msgstr "客户端漫游请求超时（以 100 毫秒为间隔）"
+
+#~ msgctxt "Combination of IP and interface name in usteer overview"
+#~ msgid "IP & Interface"
+#~ msgstr "IP 和接口"
+
+#~ msgctxt "Combination of IP and interface name in usteer overview"
+#~ msgid "IP & Interface name"
+#~ msgstr "IP 和接口名"
+
+#: applications/luci-app-usteer/htdocs/luci-static/resources/view/usteer/usteer.js:581
+msgid "Default: WLAN_REASON_DISASSOC_AP_BUSY"
+msgstr "默认: WLAN_REASON_DISASSOC_AP_BUSY"
