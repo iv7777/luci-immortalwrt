@@ -604,3 +604,7 @@ msgstr "留空表示全部"
 #~ msgctxt "Combination of IP and interface name in usteer overview"
 #~ msgid "IP & Interface name"
 #~ msgstr "IP 和接口名"
+
+#: applications/luci-app-usteer/htdocs/luci-static/resources/view/usteer/usteer.js:581
+msgid "Default: WLAN_REASON_DISASSOC_AP_BUSY"
+msgstr "默认: WLAN_REASON_DISASSOC_AP_BUSY"
