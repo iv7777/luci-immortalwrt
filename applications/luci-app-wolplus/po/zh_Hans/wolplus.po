@@ -1,0 +1,29 @@
+msgid "Wake on LAN +"
+msgstr "局域网唤醒 +"
+
+msgid "Wake on LAN"
+msgstr "局域网唤醒"
+
+msgid "Remotely wake up computers in the local network."
+msgstr "远程唤醒本地网络中的计算机。"
+
+msgid "Host Clients"
+msgstr "主机客户端"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "MAC Address"
+msgstr "MAC 地址"
+
+msgid "Invalid MAC address format. Expected format: XX:XX:XX:XX:XX:XX"
+msgstr "无效的 MAC 地址格式。期望的格式为：XX:XX:XX:XX:XX:XX"
+
+msgid "Network Interface"
+msgstr "网络接口"
+
+msgid "Wake Up Host"
+msgstr "唤醒主机"
+
+msgid "Awake"
+msgstr "唤醒"
