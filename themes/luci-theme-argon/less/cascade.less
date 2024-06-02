@@ -2991,7 +2991,7 @@ td > .ifacebadge,
 
 #syslog {
   font-size: small;
-  font-family: 'argon';
+  font-family: 'Google Sans';
   line-height: 1.25;
   overflow-y: hidden;
   width: 100%;
@@ -3280,6 +3280,7 @@ span[data-tooltip] .label {
 .cbi-tooltip {
   position: absolute;
   z-index: 1000;
+  top: -1000px;
   left: -1000px;
   padding: 2px 5px;
   transition: opacity .25s ease-out;
@@ -3406,7 +3407,7 @@ label[data-index][data-depends] {
   textarea {
     background: transparent;
     border-radius: 0.25rem;
-    font-family: 'argon' !important;
+    font-family: 'Google Sans' !important;
     color: #8898aa;
     border: 1px solid #dee2e6;
     padding: 0.5rem;
@@ -3435,7 +3436,7 @@ div[style*="display:grid;grid-template-columns:repeat"] {
   justify-content: space-evenly !important;
   padding-bottom: 1rem;
   flex-wrap: wrap;
-  font-family: 'argon';
+  font-family: 'Google Sans';
 
   .ifacebox {
     text-align: center;
@@ -3857,11 +3858,17 @@ div[style*="display:grid;grid-template-columns:repeat"] {
 }
 
 /* custom commands */
+.commands {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  gap: 10px;
+}
+
 .commandbox {
-  width: 24% !important;
-  margin: 10px 0 0 10px !important;
   padding: .5rem 1rem;
+  gap: 0.5rem;
   border-bottom: thin solid #ccc;
+  border-radius: .25rem;
   background: #eee;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 1px 2px rgba(0, 0, 0, .05);
 }
@@ -3879,10 +3886,8 @@ div[style*="display:grid;grid-template-columns:repeat"] {
 }
 
 .commandbox code {
-  position: absolute;
   overflow: hidden;
-  max-width: 60%;
-  margin-left: 4px;
+  max-width: fit-content;
   padding: 2px 3px;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -4036,17 +4041,17 @@ pre.command-output {
     border: 1px solid #dee2e6;
     background-color: transparent;
     border-radius: 0.25rem;
-    font-family: 'argon' !important;
+    font-family: 'Google Sans' !important;
     box-shadow: none;
   }
 
   #debug-rc-output > textarea {
-    font-family: 'argon' !important;
+    font-family: 'Google Sans' !important;
   }
 
   .CodeMirror {
     font-size: inherit;
-    font-family: 'argon' !important;
+    font-family: 'Google Sans' !important;
   }
 
   .cbi-button-up, .cbi-button-down {
@@ -4193,10 +4198,6 @@ pre.command-output {
   [data-page="admin-network-hosts"] .table,
   [data-page="admin-network-routes"] .table {
     overflow-y: visible;
-  }
-
-  .commandbox {
-    width: 32% !important;
   }
 
   .btn:not(button),
@@ -4402,11 +4403,6 @@ pre.command-output {
     text-align: left !important;
   }
 
-  .commandbox {
-    width: 100% !important;
-    margin-left: 0 !important;
-  }
-
   .btn:not(button),
   .cbi-button {
     font-size: 0.875rem;
@@ -4605,8 +4601,12 @@ pre.command-output {
             border-bottom: var(--white) 1px solid;
             border-radius: 0;
           }
+
         }
       }
     }
+
   }
+
+
 }
