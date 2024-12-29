@@ -1077,13 +1077,13 @@ return view.extend({
 					log_box.modalonly = true;
 
 					log_box.update_log = L.bind(function(view, log_data) {
-						return document.getElementById('syslog').textContent = log_data.result;
+						return document.getElementById('log_area').textContent = log_data.result;
 					}, o, this);
 
 					log_box.render = L.bind(function() {
 						return E([
 							E('p', {}, _('This is the current content of the log file in %h for this service.').format(logdir)),
-							E('p', {}, E('textarea', { 'style': 'width:100%; font-size: 10px', 'rows': 20, 'readonly' : 'readonly', 'id' : 'syslog' }, _('Please press [Read] button') ))
+							E('p', {}, E('textarea', { 'style': 'width:100%', 'rows': 20, 'readonly' : 'readonly', 'id' : 'log_area' }, _('Please press [Read] button') ))
 						]);
 					}, o, this);
 				}
