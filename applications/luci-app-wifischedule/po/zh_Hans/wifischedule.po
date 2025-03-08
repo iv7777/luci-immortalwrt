@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2025-03-10 03:34+0000\n"
-"Last-Translator: DragonBluep <yangshiji66@outlook.com>\n"
+"PO-Revision-Date: 2025-02-26 15:18+0000\n"
+"Last-Translator: MkQtS <MkQtS@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/openwrt/luciapplicationswifischedule/zh_Hans/>\n"
 "Language: zh_Hans\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10.3-dev\n"
+"X-Generator: Weblate 5.10.2-dev\n"
 
 #: applications/luci-app-wifischedule/htdocs/luci-static/resources/view/wifischedule/wifischedule.js:58
 msgid "Activate wifi"
@@ -32,7 +32,7 @@ msgstr "定义自动打开和关闭 WiFi 的计划表。"
 
 #: applications/luci-app-wifischedule/htdocs/luci-static/resources/view/wifischedule/wifischedule.js:68
 msgid "Disable wifi forced"
-msgstr "强制停用了 wifi"
+msgstr "强制停用了 WiFi"
 
 #: applications/luci-app-wifischedule/htdocs/luci-static/resources/view/wifischedule/wifischedule.js:63
 msgid "Disable wifi gracefully"
@@ -126,10 +126,34 @@ msgstr "卸载模块（实验性的，更省电）"
 msgid "Wednesday"
 msgstr "星期三"
 
-#: applications/luci-app-wifischedule/root/usr/share/luci/menu.d/luci-app-wifischedule.json:3
+#: applications/luci-app-wifischedule/htdocs/luci-static/resources/view/wifischedule/wifischedule.js:51
 msgid "WiFi Schedule"
 msgstr "WiFi 计划"
 
 #: applications/luci-app-wifischedule/htdocs/luci-static/resources/view/wifischedule/wifischedule.js:51
 msgid "Wifi Schedule"
 msgstr "WiFi 计划"
+
+#~ msgid "Determine Modules Automatically"
+#~ msgstr "自动确定模块"
+
+#~ msgid "Disabled wifi forced"
+#~ msgstr "强制关闭 WiFi"
+
+#~ msgid "Enable"
+#~ msgstr "启用"
+
+#~ msgid "Cron Jobs"
+#~ msgstr "计划任务"
+
+#~ msgid "Schedule"
+#~ msgstr "计划表"
+
+#~ msgid "View Cron Jobs"
+#~ msgstr "查看计划任务"
+
+#~ msgid "View Logfile"
+#~ msgstr "查看日志文件"
+
+#~ msgid "Wifi Schedule Logfile"
+#~ msgstr "WiFi 计划日志文件"
