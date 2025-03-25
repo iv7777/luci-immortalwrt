@@ -1,3 +1,0 @@
-[submodule "applications/luci-app-nginx"]
-	path = applications/luci-app-nginx
-	url = https://github.com/iv7777/luci-app-nginx.git
