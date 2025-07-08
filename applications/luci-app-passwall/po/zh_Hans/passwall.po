@@ -2140,3 +2140,12 @@ msgstr "Gecko 包大小（最小）"
 
 msgid "Gecko Packet Size (max)"
 msgstr "Gecko 包大小（最大）"
+
+msgid "Fallback"
+msgstr "回落"
+
+msgid "Format: dest,path,xver,alpn"
+msgstr "格式: dest,path,xver,alpn"
+
+msgid "Accept Proxy Protocol"
+msgstr "接受 Proxy Protocol"
