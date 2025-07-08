@@ -112,7 +112,7 @@ o:depends({ [_n("protocol")] = "vmess" })
 o:depends({ [_n("protocol")] = "vless" })
 o:depends({ [_n("protocol")] = "trojan" })
 
-o = s:option(ListValue, _n("flow"), translate("flow"))
+o = s:option(ListValue, _n("flow"), translate("Flow"))
 o.default = ""
 o:value("", translate("Disable"))
 o:value("xtls-rprx-vision")
@@ -178,7 +178,7 @@ function o.write(self, section, value)
 	return DynamicList.write(self, section, t)
 end
 
-o = s:option(ListValue, _n("alpn"), translate("alpn"))
+o = s:option(ListValue, _n("alpn"), translate("ALPN"))
 o.default = "h2,http/1.1"
 o:value("h3")
 o:value("h2")
@@ -355,7 +355,7 @@ o:depends({ [_n("transport")] = "mkcp" })
 o = s:option(Value, _n("grpc_serviceName"), "ServiceName")
 o:depends({ [_n("transport")] = "grpc" })
 
-o = s:option(Flag, _n("acceptProxyProtocol"), translate("acceptProxyProtocol"), translate("Whether to receive PROXY protocol, when this node want to be fallback or forwarded by proxy, it must be enable, otherwise it cannot be used."))
+o = s:option(Flag, _n("acceptProxyProtocol"), translate("Accept Proxy Protocol"), translate("Whether to receive PROXY protocol, when this node want to be fallback or forwarded by proxy, it must be enable, otherwise it cannot be used."))
 o.default = "0"
 o:depends({ [_n("custom")] = false })
 
@@ -379,7 +379,7 @@ o.default = 0
 o:depends({ [_n("fallback")] = true })
 ]]--
 
-o = s:option(DynamicList, _n("fallback_list"), "Fallback", translate("format: dest,path,xver"))
+o = s:option(DynamicList, _n("fallback_list"), translate("Fallback"), translate("Format: dest,path,xver,alpn"))
 o:depends({ [_n("fallback")] = true })
 
 o = s:option(Flag, _n("bind_local"), translate("Bind Local"), translate("When selected, it can only be accessed localhost."))
