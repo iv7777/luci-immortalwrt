@@ -1938,3 +1938,12 @@ msgstr "可以通过输入 GeoIP/Geosite，提取它们所包含的域名/IP。"
 
 msgid "Use the GeoIP/Geosite query function to verify if the entered Geo rules are correct."
 msgstr "利用 GeoIP/Geosite 查询功能，可以验证输入的 Geo 规则是否正确。"
+
+msgid "Fallback"
+msgstr "回落"
+
+msgid "Format: dest,path,xver,alpn"
+msgstr "格式: dest,path,xver,alpn"
+
+msgid "Accept Proxy Protocol"
+msgstr "接受 Proxy Protocol"
