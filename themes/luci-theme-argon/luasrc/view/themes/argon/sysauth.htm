@@ -109,15 +109,15 @@
 	</div>
 	<div class="volume-control mute"></div>
 	<script>
-		document.querySelector(".volume-control").addEventListener("click", function(){
-			if(this.classList.contains("mute")){
-				this.classList.remove("mute");
-				document.getElementById("video").muted = false;
+		$(".volume-control").click(function(){
+			if($(this).hasClass("mute")){
+				$(this).removeClass("mute")
+				$("#video").prop('muted', false);
 			}else{
-				this.classList.add("mute");
-				document.getElementById("video").muted = true;
+				$(this).addClass("mute")
+				$("#video").prop('muted', true);
 			}
-		});
+		})
 	</script>
 	<!-- Video Player End -->
 	<% else %>
