@@ -1,3 +1,6 @@
 [submodule "applications/luci-app-tailscale"]
 	path = applications/luci-app-tailscale
 	url = https://github.com/iv7777/luci-app-tailscale.git
+[submodule "applications/luci-app-authshield"]
+	path = applications/luci-app-authshield
+	url = https://github.com/iv7777/luci-app-authshield.git
