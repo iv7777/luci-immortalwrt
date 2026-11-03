@@ -6,13 +6,16 @@
 
 return view.extend({
 	async retrieveLog() {
-		const stat = await Promise.all([
-			L.resolveDefault(fs.stat('/sbin/logread'), null),
-			L.resolveDefault(fs.stat('/usr/sbin/logread'), null)
-		]);
-		const logger = stat[0] ? stat[0].path : stat[1] ? stat[1].path : null;
-
-		const logdata = await fs.exec_direct(logger, ['-e', 'tailscale']);
+		// Do not fs.stat() the binary first: that needs a "list" ACL grant on
+		// the path (and on the symlink target when logread is provided as an
+		// alternative, e.g. /sbin/logread -> /usr/libexec/logread-ubox).
+		// Run the ACL-granted paths directly and fall back on failure.
+		let logdata;
+		try {
+			logdata = await fs.exec_direct('/sbin/logread', ['-e', 'tailscale']);
+		} catch (err) {
+			logdata = await fs.exec_direct('/usr/sbin/logread', ['-e', 'tailscale']);
+		}
 		const statusMappings = {
 			'daemon.err': { status: 'StdErr', startIndex: 9 },
 			'daemon.notice': { status: 'Info', startIndex: 10 }
