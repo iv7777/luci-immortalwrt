@@ -653,24 +653,42 @@ function gen_config_server(node)
 
 	if node.fallback and node.fallback == "1" then
 		local fallbacks = {}
-		for i = 1, #node.fallback_list do
-			local fallbackStr = node.fallback_list[i]
+		for _, fallbackStr in ipairs(node.fallback_list or {}) do
 			if fallbackStr then
 				local tmp = {}
-				string.gsub(fallbackStr, '[^,]+', function(w)
+				for w in fallbackStr:gmatch("([^,]*),?") do
 					table.insert(tmp, w)
-				end)
-				local dest = tmp[1] or ""
-				local path = tmp[2]
-				local xver = tonumber(tmp[3])
-				if not dest:find("%.") then
-					dest = tonumber(dest)
 				end
-				fallbacks[i] = {
-					path = path,
-					dest = dest,
-					xver = xver
-				}
+
+				local dest = tmp[1] or ""
+
+				if dest ~= "" then
+					if not dest:find("%.") then
+						dest = tonumber(dest)
+					end
+
+					local fallback = {
+						dest = dest
+					}
+
+					local path = tmp[2]
+					if path and path ~= "" then
+						fallback.path = path
+					end
+
+					local xver = tonumber(tmp[3])
+					if xver then
+						fallback.xver = xver
+					end
+
+					local alpn = tmp[4]
+					if alpn and alpn ~= "" then
+						fallback.alpn = alpn
+					end
+
+					table.insert(fallbacks, fallback)
+				end
+				-- If dest is empty, skip the fallback
 			end
 		end
 		settings.fallbacks = fallbacks
@@ -881,7 +899,8 @@ function gen_config_server(node)
 					end)(),
 					sockopt = {
 						tcpFastOpen = (node.tcp_fast_open == "1") and true or nil,
-						acceptProxyProtocol = (node.acceptProxyProtocol and node.acceptProxyProtocol == "1") and true or false
+						acceptProxyProtocol = (node.acceptProxyProtocol and node.acceptProxyProtocol == "1") and true or false,
+						trustedXForwardedFor = (node.cloudflare_cdn == "1" and (node.transport == "ws" or node.transport == "httpupgrade" or node.transport == "xhttp")) and { "CF-Connecting-IP", "X-Forwarded-For" } or nil
 					}
 				}
 			}

@@ -145,6 +145,15 @@ msgstr "远程 DNS DoH"
 msgid "Format: URL[,IP] (optional IP to map the domain in the URL)"
 msgstr "格式：URL[,IP]（IP 可选，用于绑定 URL 中的域名）"
 
+msgid "Format: dest,path,xver,alpn"
+msgstr "格式：dest,path,xver,alpn"
+
+msgid "Cloudflare CDN"
+msgstr "Cloudflare CDN"
+
+msgid "Enable when this node is behind the Cloudflare CDN. The real client IP is read from the CF-Connecting-IP / X-Forwarded-For request header."
+msgstr "当此节点位于 Cloudflare CDN 之后时启用。将从 CF-Connecting-IP / X-Forwarded-For 请求头中读取客户端真实 IP。"
+
 msgid "Notify the DNS server when the DNS query is notified, the location of the client (cannot be a private IP address)."
 msgstr "用于 DNS 查询时通知 DNS 服务器，客户端所在的地理位置（不能是私有 IP 地址）。"
 
