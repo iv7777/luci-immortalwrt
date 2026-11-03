@@ -476,6 +476,13 @@ o.default = "0"
 o:depends({ transport = "raw" })
 o:depends({ transport = "ws" })
 
+--[[Cloudflare CDN (sockopt.trustedXForwardedFor)]]
+o = s:option(Flag, "cloudflare_cdn", translate("Cloudflare CDN"), translate("Enable when this node is behind the Cloudflare CDN. The real client IP is read from the CF-Connecting-IP / X-Forwarded-For request header."))
+o.default = "0"
+o:depends({ transport = "ws" })
+o:depends({ transport = "httpupgrade" })
+o:depends({ transport = "xhttp" })
+
 --[[Fast Open]]
 o = s:option(Flag, "tcp_fast_open", "TCP " .. translate("Fast Open"))
 o.default = "0"
@@ -504,7 +511,7 @@ o.default = 0
 o:depends({ fallback = true })
 ]]--
 
-o = s:option(DynamicList, "fallback_list", "Fallback", translate("format: dest,path,xver"))
+o = s:option(DynamicList, "fallback_list", "Fallback", translate("Format: dest,path,xver,alpn"))
 o:depends({ fallback = true })
 
 -- Not supported at present
