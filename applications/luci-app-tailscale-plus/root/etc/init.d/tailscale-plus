@@ -1,0 +1,297 @@
+#!/bin/sh /etc/rc.common
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# Applies the settings of luci-app-tailscale-plus to the stock Tailscale
+# service (/etc/init.d/tailscale from the tailscale package).
+#
+#  - service_enabled=0 (default): the Tailscale daemon is stopped and disabled
+#  - service_enabled=1: the daemon is enabled/started and the saved settings
+#    are applied with "tailscale set"
+#
+# Settings are only applied once they were saved from LuCI (plus_configured=1),
+# so an already running node is never changed behind the user's back.
+#
+# Note: there is deliberately no stop_service(); stopping this script at
+# shutdown must not disable the Tailscale service.
+
+USE_PROCD=1
+START=99
+
+NAME=tailscale-plus
+SIG_FILE=/var/run/tailscale-plus.daemon
+DNS_ENTRY="/ts.net/100.100.100.100"
+DNS_ENTRY_OLD="/.ts.net/100.100.100.100"
+
+log() {
+	logger -t "$NAME" "$*"
+}
+
+ts_bin() {
+	if [ -x /usr/sbin/tailscale ]; then
+		echo /usr/sbin/tailscale
+	elif [ -x /usr/bin/tailscale ]; then
+		echo /usr/bin/tailscale
+	else
+		return 1
+	fi
+}
+
+# limited SECONDS COMMAND [ARGS...]
+limited() {
+	local secs="$1"
+	shift
+	if command -v timeout >/dev/null 2>&1; then
+		timeout "$secs" "$@"
+	else
+		"$@"
+	fi
+}
+
+# return 0 (true) if version $1 >= $2
+version_gte() {
+	awk -v a="${1%%-*}" -v b="${2%%-*}" 'BEGIN {
+		split(a, av, ".")
+		split(b, bv, ".")
+		for (i = 1; i <= 3; i++) {
+			ai = int(av[i] + 0); bi = int(bv[i] + 0)
+			if (ai > bi) { exit 0 }
+			if (ai < bi) { exit 1 }
+		}
+		exit 0
+	}'
+}
+
+# The status command exits 0 whenever the daemon answers, in any login state.
+daemon_running() {
+	limited 5 "$TS" status --json >/dev/null 2>&1
+}
+
+wait_daemon() {
+	local i=0
+	while [ "$i" -lt 30 ]; do
+		daemon_running && return 0
+		sleep 1
+		i=$((i + 1))
+	done
+	return 1
+}
+
+# Settings that only take effect when the daemon is (re)started.
+daemon_signature() {
+	local port state_file fw_mode std_out std_err
+
+	config_load tailscale
+	config_get port settings port 41641
+	config_get state_file settings state_file /etc/tailscale/tailscaled.state
+	config_get fw_mode settings fw_mode nftables
+	config_get_bool std_out settings log_stdout 1
+	config_get_bool std_err settings log_stderr 1
+
+	echo "$port|$state_file|$fw_mode|$std_out|$std_err"
+}
+
+dns_forward_present() {
+	uci -q get 'dhcp.@dnsmasq[0].server' 2>/dev/null | tr ' ' '\n' | grep -qxF "$1"
+}
+
+setup_dns_forward() {
+	[ -f /etc/config/dhcp ] && [ -x /etc/init.d/dnsmasq ] || return 0
+	dns_forward_present "$DNS_ENTRY" && return 0
+
+	uci -q add_list "dhcp.@dnsmasq[0].server=$DNS_ENTRY"
+	uci -q commit dhcp
+	/etc/init.d/dnsmasq reload >/dev/null 2>&1
+	log "added DNS forward $DNS_ENTRY"
+}
+
+remove_dns_forward() {
+	local entry changed=0
+
+	[ -f /etc/config/dhcp ] && [ -x /etc/init.d/dnsmasq ] || return 0
+
+	for entry in "$DNS_ENTRY" "$DNS_ENTRY_OLD"; do
+		if dns_forward_present "$entry"; then
+			uci -q del_list "dhcp.@dnsmasq[0].server=$entry"
+			changed=1
+		fi
+	done
+
+	if [ "$changed" = "1" ]; then
+		uci -q commit dhcp
+		/etc/init.d/dnsmasq reload >/dev/null 2>&1
+		log "removed DNS forward"
+	fi
+}
+
+# ts_set ARGS...: run "tailscale set ..." and log the outcome
+ts_set() {
+	local out rc
+
+	out="$(limited 30 "$TS" set "$@" 2>&1)"
+	rc=$?
+
+	if [ "$rc" = "0" ]; then
+		log "settings applied: set $*"
+	else
+		log "failed to apply 'set $*' (exit code $rc): $out"
+	fi
+	return "$rc"
+}
+
+apply_settings() {
+	local configured
+	local accept_routes advertise_exit_node exit_node exit_node_allow_lan_access
+	local ssh shields_up runwebclient nosnat stateful_filtering hostname dns_mode
+	local enable_relay relay_server_port routes ts_ver
+
+	config_load tailscale
+	config_get_bool configured settings plus_configured 0
+	if [ "$configured" != "1" ]; then
+		log "no settings saved from LuCI yet, leaving the node's own settings untouched"
+		return 0
+	fi
+
+	config_get_bool accept_routes settings accept_routes 0
+	config_get_bool advertise_exit_node settings advertise_exit_node 0
+	config_get exit_node settings exit_node ''
+	config_get_bool exit_node_allow_lan_access settings exit_node_allow_lan_access 1
+	config_get_bool ssh settings ssh 0
+	config_get_bool shields_up settings shields_up 0
+	config_get_bool runwebclient settings runwebclient 0
+	config_get_bool nosnat settings nosnat 0
+	config_get_bool stateful_filtering settings stateful_filtering 0
+	config_get hostname settings hostname ''
+	config_get dns_mode settings dns_mode disabled
+	config_get_bool enable_relay settings enable_relay 0
+	config_get relay_server_port settings relay_server_port 40000
+
+	# advertise_routes is a list; tolerate comma or space separated items
+	routes=""
+	append_route() {
+		local r
+		for r in $(echo "$1" | tr ',' ' '); do
+			routes="${routes:+$routes,}$r"
+		done
+	}
+	config_list_foreach settings advertise_routes append_route
+
+	# Tailscale refuses to advertise and use an exit node at the same time, so
+	# an existing exit node is cleared first and a new one is set last. This
+	# also keeps one bad exit node from blocking all the other settings.
+	[ -z "$exit_node" ] && ts_set --exit-node=
+
+	set --
+	set -- "$@" "--accept-routes=$([ "$accept_routes" = 1 ] && echo true || echo false)"
+	if [ -n "$exit_node" ]; then
+		set -- "$@" --advertise-exit-node=false
+	else
+		set -- "$@" "--advertise-exit-node=$([ "$advertise_exit_node" = 1 ] && echo true || echo false)"
+	fi
+	set -- "$@" "--advertise-routes=$routes"
+	set -- "$@" "--exit-node-allow-lan-access=$([ "$exit_node_allow_lan_access" = 1 ] && echo true || echo false)"
+	set -- "$@" "--ssh=$([ "$ssh" = 1 ] && echo true || echo false)"
+	set -- "$@" "--shields-up=$([ "$shields_up" = 1 ] && echo true || echo false)"
+	set -- "$@" "--webclient=$([ "$runwebclient" = 1 ] && echo true || echo false)"
+	set -- "$@" "--snat-subnet-routes=$([ "$nosnat" = 1 ] && echo false || echo true)"
+	set -- "$@" "--stateful-filtering=$([ "$stateful_filtering" = 1 ] && echo true || echo false)"
+	set -- "$@" "--hostname=$hostname"
+
+	case "$dns_mode" in
+		magicdns)
+			set -- "$@" --accept-dns=true
+			remove_dns_forward
+			;;
+		openwrt_forward)
+			set -- "$@" --accept-dns=false
+			setup_dns_forward
+			;;
+		*)
+			set -- "$@" --accept-dns=false
+			remove_dns_forward
+			;;
+	esac
+
+	# --relay-server-port needs tailscale >= 1.90.5
+	ts_ver="$("$TS" version 2>/dev/null | head -n1)"
+	if version_gte "$ts_ver" "1.90.5"; then
+		if [ "$enable_relay" = "1" ]; then
+			set -- "$@" "--relay-server-port=$relay_server_port"
+		else
+			set -- "$@" "--relay-server-port="
+		fi
+	fi
+
+	ts_set "$@"
+
+	if [ -n "$exit_node" ]; then
+		ts_set "--exit-node=$exit_node" ||
+			log "exit node not applied; if this device is not logged in yet it is applied after login"
+	fi
+}
+
+ensure_daemon() {
+	local sig_now
+
+	/etc/init.d/tailscale enabled || /etc/init.d/tailscale enable
+
+	sig_now="$(daemon_signature)"
+
+	if daemon_running; then
+		# Restart only if the daemon arguments changed since it was started.
+		# Without a recorded signature the daemon was just started by the
+		# boot sequence with the current configuration.
+		if [ -f "$SIG_FILE" ] && [ "$(cat "$SIG_FILE")" != "$sig_now" ]; then
+			log "daemon settings changed, restarting tailscaled"
+			/etc/init.d/tailscale restart
+		fi
+	else
+		log "starting tailscaled"
+		/etc/init.d/tailscale start
+	fi
+
+	if ! wait_daemon; then
+		log "tailscaled did not become ready in time"
+		return 1
+	fi
+
+	echo "$sig_now" > "$SIG_FILE"
+	return 0
+}
+
+stop_daemon() {
+	remove_dns_forward
+	rm -f "$SIG_FILE"
+
+	if /etc/init.d/tailscale enabled || [ -n "$(pidof tailscaled)" ]; then
+		log "service disabled, stopping tailscaled"
+		/etc/init.d/tailscale stop >/dev/null 2>&1
+		/etc/init.d/tailscale disable >/dev/null 2>&1
+	fi
+}
+
+apply_state() {
+	local enabled
+
+	TS="$(ts_bin)" || { log "tailscale binary not found"; return 0; }
+
+	config_load tailscale
+	config_get_bool enabled settings service_enabled 0
+
+	if [ "$enabled" = "1" ]; then
+		ensure_daemon && apply_settings
+	else
+		stop_daemon
+	fi
+}
+
+start_service() {
+	apply_state
+}
+
+reload_service() {
+	apply_state
+}
+
+service_triggers() {
+	procd_add_reload_trigger tailscale
+}

@@ -1,0 +1,30 @@
+{
+	"luci-app-tailscale-plus": {
+		"description": "Grant access to Tailscale (Plus) status, settings and diagnostics",
+		"read": {
+			"ubus": {
+				"tailscale_plus": [
+					"get_status",
+					"get_subroutes",
+					"get_firewall",
+					"get_interface",
+					"get_login_status",
+					"get_diag",
+					"get_log"
+				]
+			},
+			"uci": [ "tailscale" ]
+		},
+		"write": {
+			"ubus": {
+				"tailscale_plus": [
+					"start_login",
+					"do_logout",
+					"setup_firewall",
+					"start_diag"
+				]
+			},
+			"uci": [ "tailscale" ]
+		}
+	}
+}

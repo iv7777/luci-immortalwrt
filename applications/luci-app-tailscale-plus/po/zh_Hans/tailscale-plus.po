@@ -1,0 +1,516 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: luci-app-tailscale-plus\n"
+"Language: zh_Hans\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "The interface tailscale0 does not exist. Tailscale is not running."
+msgstr "接口 tailscale0 不存在，Tailscale 未运行。"
+
+msgid "Interface"
+msgstr "接口"
+
+msgid "State"
+msgstr "状态"
+
+msgid "Addresses"
+msgstr "地址"
+
+msgid "MTU"
+msgstr "MTU"
+
+msgid "Received"
+msgstr "已接收"
+
+msgid "packets"
+msgstr "个数据包"
+
+msgid "errors"
+msgstr "个错误"
+
+msgid "dropped"
+msgstr "个丢弃"
+
+msgid "Transmitted"
+msgstr "已发送"
+
+msgid "(no output)"
+msgstr "（无输出）"
+
+msgid "Exit code: %d"
+msgstr "退出码：%d"
+
+msgid "Timed out while waiting for the result."
+msgstr "等待结果超时。"
+
+msgid "Running ..."
+msgstr "正在运行…"
+
+msgid "Unknown error"
+msgstr "未知错误"
+
+msgid "Error: %s"
+msgstr "错误：%s"
+
+msgid "Run Network Check"
+msgstr "运行网络检测"
+
+msgid "choose a device"
+msgstr "选择设备"
+
+msgid "offline"
+msgstr "离线"
+
+msgid "or enter a Tailscale IP / device name"
+msgstr "或输入 Tailscale IP / 设备名称"
+
+msgid "Choose a device or enter a target first."
+msgstr "请先选择设备或输入目标。"
+
+msgid "Ping"
+msgstr "Ping"
+
+msgid "Tailscale Diagnostics"
+msgstr "Tailscale 诊断"
+
+msgid "Network Check"
+msgstr "网络检测"
+
+msgid "Tests UDP connectivity, NAT behaviour and the latency to the Tailscale relay servers. It takes a few seconds. A direct connection between devices needs working UDP."
+msgstr "检测 UDP 连通性、NAT 行为以及到 Tailscale 中继服务器的延迟，需要几秒钟。设备之间要建立直连，需要 UDP 可用。"
+
+msgid "Pings a device through Tailscale and shows whether the path is direct or goes through a relay."
+msgstr "通过 Tailscale 对设备执行 Ping，并显示链路是直连还是经过中继。"
+
+msgid "No Tailscale log entries yet."
+msgstr "暂无 Tailscale 日志。"
+
+msgid "Tailscale Logs"
+msgstr "Tailscale 日志"
+
+msgid "The most recent Tailscale messages from the system log. This page refreshes automatically."
+msgstr "系统日志中最近的 Tailscale 消息。本页会自动刷新。"
+
+msgid "Scroll to end"
+msgstr "滚动到末尾"
+
+msgid "Just now"
+msgstr "刚刚"
+
+msgid "%d min ago"
+msgstr "%d 分钟前"
+
+msgid "%d h ago"
+msgstr "%d 小时前"
+
+msgid "Collecting data ..."
+msgstr "正在收集数据…"
+
+msgid "Service Status"
+msgstr "服务状态"
+
+msgid "TAILSCALE NOT FOUND"
+msgstr "未找到 TAILSCALE"
+
+msgid "DISABLED"
+msgstr "已禁用"
+
+msgid "Tailscale is switched off. Enable it in the settings below, then click \"Save & Apply\"."
+msgstr "Tailscale 已关闭。请在下方设置中启用，然后点击“保存并应用”。"
+
+msgid "NOT RUNNING"
+msgstr "未运行"
+
+msgid "STARTING"
+msgstr "正在启动"
+
+msgid "STOPPED"
+msgstr "已停止"
+
+msgid "Tailscale is installed but turned down (\"tailscale down\")."
+msgstr "Tailscale 已安装但处于关闭状态（“tailscale down”）。"
+
+msgid "LOGGED OUT"
+msgstr "已登出"
+
+msgid "Use the Login button in the \"Account\" tab to authenticate this device."
+msgstr "请使用“账户”选项卡中的登录按钮验证此设备。"
+
+msgid "WAITING FOR APPROVAL"
+msgstr "等待批准"
+
+msgid "An administrator has to approve this device in the Tailscale admin console."
+msgstr "管理员需要在 Tailscale 管理控制台中批准此设备。"
+
+msgid "UNKNOWN"
+msgstr "未知"
+
+msgid "RUNNING"
+msgstr "运行中"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "Device Name"
+msgstr "设备名称"
+
+msgid "Tailscale IPv4"
+msgstr "Tailscale IPv4"
+
+msgid "Tailscale IPv6"
+msgstr "Tailscale IPv6"
+
+msgid "Tailnet Name"
+msgstr "Tailnet 名称"
+
+msgid "TUN Mode"
+msgstr "TUN 模式"
+
+msgid "Enabled"
+msgstr "已启用"
+
+msgid "Disabled"
+msgstr "已禁用"
+
+msgid "Using Exit Node"
+msgstr "正在使用出口节点"
+
+msgid "Health Check"
+msgstr "健康检查"
+
+msgid "Direct"
+msgstr "直连"
+
+msgid "Relay"
+msgstr "中继"
+
+msgid "Tailscale is not running."
+msgstr "Tailscale 未运行。"
+
+msgid "No peer devices found."
+msgstr "未找到对等设备。"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Hostname"
+msgstr "主机名"
+
+msgid "Tailscale IP"
+msgstr "Tailscale IP"
+
+msgid "OS"
+msgstr "操作系统"
+
+msgid "Connection"
+msgstr "连接"
+
+msgid "RX"
+msgstr "接收"
+
+msgid "TX"
+msgstr "发送"
+
+msgid "Last Seen"
+msgstr "最后在线"
+
+msgid "Exit Node"
+msgstr "出口节点"
+
+msgid "Online"
+msgstr "在线"
+
+msgid "Offline"
+msgstr "离线"
+
+msgid "Now"
+msgstr "现在"
+
+msgid "Logged in to Tailscale."
+msgstr "已登录 Tailscale。"
+
+msgid "Logged in. An administrator has to approve this device in the Tailscale admin console."
+msgstr "已登录。管理员需要在 Tailscale 管理控制台中批准此设备。"
+
+msgid "Complete the login in the new browser tab. This page updates automatically afterwards."
+msgstr "请在新打开的浏览器标签页中完成登录，之后本页会自动更新。"
+
+msgid "Login failed: %s"
+msgstr "登录失败：%s"
+
+msgid "Timed out while waiting for the login. Check the log and try again."
+msgstr "等待登录超时。请查看日志后重试。"
+
+msgid "Could not open a new tab. Please allow pop-ups for this site."
+msgstr "无法打开新标签页。请允许此网站的弹出窗口。"
+
+msgid "Requesting the Tailscale login URL ... please wait."
+msgstr "正在请求 Tailscale 登录网址…请稍候。"
+
+msgid "Tailscale Login"
+msgstr "Tailscale 登录"
+
+msgid "Logging in with the auth key ..."
+msgstr "正在使用认证密钥登录…"
+
+msgid "Requesting the login URL ..."
+msgstr "正在请求登录网址…"
+
+msgid "Confirm Logout"
+msgstr "确认登出"
+
+msgid "Are you sure you want to log out? This disconnects this device from your tailnet and you have to authenticate again."
+msgstr "确定要登出吗？这将使此设备与您的 tailnet 断开，需要重新验证。"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Logging out ..."
+msgstr "正在登出…"
+
+msgid "Please wait."
+msgstr "请稍候。"
+
+msgid "Logout failed: %s"
+msgstr "登出失败：%s"
+
+msgid "Logged out."
+msgstr "已登出。"
+
+msgid "Logout"
+msgstr "登出"
+
+msgid "Tailnet devices may access this router"
+msgstr "允许 Tailnet 设备访问此路由器"
+
+msgid "Zone input policy. Needed for Tailscale SSH, the web interface or LuCI over the tailnet."
+msgstr "区域入站策略。通过 tailnet 使用 Tailscale SSH、Web 界面或 LuCI 时需要。"
+
+msgid "LAN devices may access the tailnet"
+msgstr "允许局域网设备访问 Tailnet"
+
+msgid "Lets LAN clients reach other tailnet devices and subnets, and use an exit node through this router."
+msgstr "允许局域网客户端访问其他 tailnet 设备和子网，并通过此路由器使用出口节点。"
+
+msgid "Tailnet devices may access the LAN"
+msgstr "允许 Tailnet 设备访问局域网"
+
+msgid "Required for Subnet Routing: remote devices reaching the subnets advertised by this router."
+msgstr "子网路由所需：远程设备访问此路由器所通告的子网。"
+
+msgid "Tailnet devices may access the internet through this router"
+msgstr "允许 Tailnet 设备通过此路由器访问互联网"
+
+msgid "Required when this router is advertised as an exit node."
+msgstr "将此路由器通告为出口节点时需要。"
+
+msgid "WAN may access the tailnet"
+msgstr "允许 WAN 访问 Tailnet"
+
+msgid "Rarely needed. Leave this off unless you know you need it."
+msgstr "很少需要。除非明确需要，请保持关闭。"
+
+msgid "(The required firewall zone does not exist.)"
+msgstr "（所需的防火墙区域不存在。）"
+
+msgid "Failed to configure the firewall: %s"
+msgstr "配置防火墙失败：%s"
+
+msgid "Firewall configuration applied. The firewall is reloading in the background."
+msgstr "防火墙配置已应用，防火墙正在后台重新加载。"
+
+msgid "The firewall was already configured like this."
+msgstr "防火墙已是此配置。"
+
+msgid "Apply Firewall Settings"
+msgstr "应用防火墙设置"
+
+msgid "Creates the \"tailscale\" interface and firewall zone if needed, then allows exactly the traffic you tick below. Nothing is allowed that is not ticked. These settings are applied immediately and independently of \"Save & Apply\"."
+msgstr "如有需要会创建“tailscale”接口和防火墙区域，然后仅允许下方勾选的流量，未勾选的一律不允许。这些设置会立即生效，与“保存并应用”无关。"
+
+msgid "Tailscale"
+msgstr "Tailscale"
+
+msgid "Tailscale is a mesh VPN that connects your devices securely. Everything is off until you enable the service below."
+msgstr "Tailscale 是一种网状 VPN，可安全地连接您的设备。在您启用下方的服务之前，一切都处于关闭状态。"
+
+msgid "General"
+msgstr "常规"
+
+msgid "Account"
+msgstr "账户"
+
+msgid "Firewall"
+msgstr "防火墙"
+
+msgid "Devices"
+msgstr "设备"
+
+msgid "Advanced"
+msgstr "高级"
+
+msgid "Enable Tailscale"
+msgstr "启用 Tailscale"
+
+msgid "Turns the Tailscale service on or off. When off, the daemon is stopped and does not start at boot."
+msgstr "开启或关闭 Tailscale 服务。关闭时，守护进程会停止，且不会在开机时启动。"
+
+msgid "Name of this device in your tailnet. Leave empty to use the system hostname."
+msgstr "此设备在 tailnet 中的名称。留空则使用系统主机名。"
+
+msgid "Accept Routes"
+msgstr "接受路由"
+
+msgid "Accept subnet routes advertised by other devices in your tailnet."
+msgstr "接受 tailnet 中其他设备通告的子网路由。"
+
+msgid "Advertise Routes"
+msgstr "通告路由"
+
+msgid "Subnets behind this router that other tailnet devices may reach (subnet router). Pick a detected subnet or enter your own in CIDR notation. The routes still have to be approved in the Tailscale admin console."
+msgstr "此路由器后面可供其他 tailnet 设备访问的子网（子网路由器）。可选择检测到的子网，或以 CIDR 格式自行输入。路由仍需在 Tailscale 管理控制台中批准。"
+
+msgid "Advertise Exit Node"
+msgstr "通告出口节点"
+
+msgid "Offer this device as an exit node for internet traffic. Ignored while an exit node is selected below. Allow \"Tailnet devices may access the internet\" in the Firewall tab."
+msgstr "将此设备作为互联网流量的出口节点。选择了下方的出口节点时将被忽略。请在“防火墙”选项卡中允许“Tailnet 设备通过此路由器访问互联网”。"
+
+msgid "Use Exit Node"
+msgstr "使用出口节点"
+
+msgid "Route this router's internet traffic through another device. For LAN clients to use it, allow \"LAN devices may access the tailnet\" in the Firewall tab. If you pick a device here, \"Advertise Exit Node\" is switched off."
+msgstr "让此路由器的互联网流量经由另一台设备转发。若要让局域网客户端使用，请在“防火墙”选项卡中允许“局域网设备访问 Tailnet”。在此选择设备后，“通告出口节点”将被关闭。"
+
+msgid "None"
+msgstr "无"
+
+msgid "not in the current device list"
+msgstr "不在当前设备列表中"
+
+msgid "Allow LAN Access"
+msgstr "允许访问局域网"
+
+msgid "While using an exit node, keep direct access to the local network. Recommended on a router, otherwise LAN traffic is sent through the exit node."
+msgstr "使用出口节点时保留对本地网络的直接访问。建议路由器开启，否则局域网流量会被发往出口节点。"
+
+msgid "Tailscale SSH"
+msgstr "Tailscale SSH"
+
+msgid "Let Tailscale run an SSH server for this device, with access controlled by your tailnet policy."
+msgstr "让 Tailscale 为此设备运行 SSH 服务器，访问权限由您的 tailnet 策略控制。"
+
+msgid "Shields Up"
+msgstr "屏蔽入站（Shields Up）"
+
+msgid "Block all incoming connections from the tailnet."
+msgstr "阻止来自 tailnet 的所有入站连接。"
+
+msgid "Web Interface"
+msgstr "Web 界面"
+
+msgid "Expose the Tailscale web interface on port 5252, reachable over the tailnet only."
+msgstr "在 5252 端口提供 Tailscale Web 界面，仅可通过 tailnet 访问。"
+
+msgid "Disable SNAT for Subnet Routes"
+msgstr "子网路由不使用 SNAT"
+
+msgid "Keep the original source address for traffic to advertised subnets. Most users should leave this off. It also breaks exit node traffic."
+msgstr "到所通告子网的流量保留原始源地址。大多数用户应保持关闭。此项也会使出口节点流量无法正常工作。"
+
+msgid "Stateful Filtering"
+msgstr "状态过滤"
+
+msgid "Only forward reply traffic for subnet routers and exit nodes. Extra protection for forwarded packets."
+msgstr "对子网路由器和出口节点，仅转发回复流量，为转发的数据包提供额外保护。"
+
+msgid "DNS Mode"
+msgstr "DNS 模式"
+
+msgid "Disabled: system DNS only."
+msgstr "禁用：仅使用系统 DNS。"
+
+msgid "MagicDNS: Tailscale manages DNS settings of this device."
+msgstr "MagicDNS：由 Tailscale 管理此设备的 DNS 设置。"
+
+msgid "OpenWrt Forward: dnsmasq forwards ts.net names to Tailscale (ts.net only)."
+msgstr "OpenWrt 转发：dnsmasq 将 ts.net 域名转发给 Tailscale（仅限 ts.net）。"
+
+msgid "OpenWrt Forward"
+msgstr "OpenWrt 转发"
+
+msgid "Peer Relay"
+msgstr "对等中继（Peer Relay）"
+
+msgid "Act as a Peer Relay server for other devices. Needs a public IP address and an open UDP port."
+msgstr "作为对等中继服务器为其他设备提供中继。需要公网 IP 地址和开放的 UDP 端口。"
+
+msgid "Peer Relay Port"
+msgstr "对等中继端口"
+
+msgid "UDP port of the Peer Relay. Open it in your firewall and NAT."
+msgstr "对等中继的 UDP 端口。请在防火墙和 NAT 中开放该端口。"
+
+msgid "Custom Login Server"
+msgstr "自定义登录服务器"
+
+msgid "Optional: URL of a custom control server such as Headscale, for example %s. Leave empty for the default Tailscale service."
+msgstr "可选：自定义控制服务器（如 Headscale）的网址，例如 %s。留空则使用默认的 Tailscale 服务。"
+
+msgid "Enter a valid http:// or https:// URL."
+msgstr "请输入有效的 http:// 或 https:// 网址。"
+
+msgid "Auth Key"
+msgstr "认证密钥"
+
+msgid "Optional: log in with an auth key instead of the browser. The key is used once and is not saved anywhere."
+msgstr "可选：使用认证密钥代替浏览器登录。密钥仅使用一次，不会被保存。"
+
+msgid "Login"
+msgstr "登录"
+
+msgid "Logs this device in. With an auth key it logs in directly, otherwise a login page opens in a new tab."
+msgstr "登录此设备。使用认证密钥时直接登录，否则会在新标签页中打开登录页面。"
+
+msgid "Log in"
+msgstr "登录"
+
+msgid "Disconnects this device from the tailnet and expires its node key."
+msgstr "使此设备与 tailnet 断开，并使其节点密钥过期。"
+
+msgid "Log out"
+msgstr "登出"
+
+msgid "Firewall Backend"
+msgstr "防火墙后端"
+
+msgid "Firewall backend used by the Tailscale daemon. Applying a change restarts the daemon."
+msgstr "Tailscale 守护进程使用的防火墙后端。应用更改会重启守护进程。"
+
+msgid "Listen Port"
+msgstr "监听端口"
+
+msgid "UDP port of the daemon (default 41641). Useful when you forward a port for direct connections. Applying a change restarts the daemon."
+msgstr "守护进程的 UDP 端口（默认 41641）。转发端口以便直连时很有用。应用更改会重启守护进程。"
+
+msgid "State File"
+msgstr "状态文件"
+
+msgid "Where the daemon keeps its identity. A different path creates a new device and requires a new login. Never use a path in /tmp or /var, it is lost on reboot. Applying a change restarts the daemon."
+msgstr "守护进程保存其身份信息的位置。更换路径会产生新设备，需要重新登录。请勿使用 /tmp 或 /var 下的路径，重启后会丢失。应用更改会重启守护进程。"
+
+msgid "Enter an absolute path without spaces."
+msgstr "请输入不含空格的绝对路径。"
+
+msgid "Log Standard Output"
+msgstr "记录标准输出"
+
+msgid "Send the daemon's regular messages to the system log."
+msgstr "将守护进程的常规消息发送到系统日志。"
+
+msgid "Log Errors"
+msgstr "记录错误"
+
+msgid "Send the daemon's error messages to the system log."
+msgstr "将守护进程的错误消息发送到系统日志。"
+

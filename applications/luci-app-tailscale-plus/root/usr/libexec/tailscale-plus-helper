@@ -1,0 +1,122 @@
+#!/bin/sh
+# Background helper for luci-app-tailscale-plus.
+#
+# Long running Tailscale CLI calls (login, netcheck, ping) run here, detached
+# from rpcd, so that the LuCI backend never blocks. State is kept in RUN_DIR.
+#
+# Usage:
+#   tailscale-plus-helper login [LOGIN_SERVER] [AUTHKEY_FILE]
+#   tailscale-plus-helper diag netcheck
+#   tailscale-plus-helper diag ping TARGET
+
+RUN_DIR=/var/run/tailscale-plus
+
+TS=/usr/sbin/tailscale
+[ -x "$TS" ] || TS=/usr/bin/tailscale
+[ -x "$TS" ] || exit 127
+
+mkdir -p "$RUN_DIR"
+chmod 700 "$RUN_DIR"
+
+# run_limited SECONDS COMMAND [ARGS...]: apply a time limit if possible
+run_limited() {
+	local secs="$1"
+	shift
+	if command -v timeout >/dev/null 2>&1; then
+		timeout "$secs" "$@"
+	else
+		"$@"
+	fi
+}
+
+# kill_previous PIDFILE PATTERN: stop a stale run if it is still ours
+kill_previous() {
+	local pidfile="$1" pattern="$2" pid
+
+	[ -f "$pidfile" ] || return 0
+	pid="$(cat "$pidfile" 2>/dev/null)"
+	case "$pid" in
+		''|*[!0-9]*) rm -f "$pidfile"; return 0 ;;
+	esac
+
+	if [ -r "/proc/$pid/cmdline" ] && tr '\0' ' ' < "/proc/$pid/cmdline" | grep -q -- "$pattern"; then
+		kill "$pid" 2>/dev/null
+	fi
+	rm -f "$pidfile"
+}
+
+do_login() {
+	local server="$1" keyfile="$2" pid rc
+
+	kill_previous "$RUN_DIR/login.pid" 'tailscale.* login'
+	rm -f "$RUN_DIR/login.rc"
+	: > "$RUN_DIR/login.log"
+
+	set -- login
+	[ -n "$server" ] && set -- "$@" --login-server "$server"
+	[ -n "$keyfile" ] && [ -f "$keyfile" ] && set -- "$@" --auth-key "file:$keyfile"
+
+	# "tailscale login" blocks until the node is authorized. Give up after 10 min.
+	run_limited 600 "$TS" "$@" > "$RUN_DIR/login.log" 2>&1 &
+	pid=$!
+	echo "$pid" > "$RUN_DIR/login.pid"
+	wait "$pid"
+	rc=$?
+
+	# The auth key must not stay around.
+	[ -n "$keyfile" ] && rm -f "$keyfile"
+	rm -f "$RUN_DIR/login.pid"
+	echo "$rc" > "$RUN_DIR/login.rc"
+
+	# Apply the saved settings (exit node and others) now that the node is logged in.
+	if [ "$rc" = "0" ] && [ -x /etc/init.d/tailscale-plus ]; then
+		/etc/init.d/tailscale-plus reload >/dev/null 2>&1
+	fi
+	return "$rc"
+}
+
+do_diag() {
+	local kind="$1" target="$2" rc
+
+	# only one diagnostic at a time
+	if [ -f "$RUN_DIR/diag.pid" ]; then
+		kill_previous "$RUN_DIR/diag.pid" 'tailscale'
+	fi
+
+	echo "$$" > "$RUN_DIR/diag.pid"
+	rm -f "$RUN_DIR/diag.rc"
+	: > "$RUN_DIR/diag.out"
+
+	case "$kind" in
+		netcheck)
+			run_limited 40 "$TS" netcheck > "$RUN_DIR/diag.out" 2>&1
+			rc=$?
+			;;
+		ping)
+			if [ -z "$target" ]; then
+				echo "missing ping target" > "$RUN_DIR/diag.out"
+				rc=2
+			else
+				run_limited 40 "$TS" ping -c 4 --timeout=3s "$target" > "$RUN_DIR/diag.out" 2>&1
+				rc=$?
+			fi
+			;;
+		*)
+			echo "unknown diagnostic: $kind" > "$RUN_DIR/diag.out"
+			rc=2
+			;;
+	esac
+
+	rm -f "$RUN_DIR/diag.pid"
+	echo "$rc" > "$RUN_DIR/diag.rc"
+	return "$rc"
+}
+
+case "$1" in
+	login) do_login "$2" "$3" ;;
+	diag) do_diag "$2" "$3" ;;
+	*)
+		echo "usage: $0 login [server] [authkey-file] | diag netcheck | diag ping <target>" >&2
+		exit 2
+		;;
+esac

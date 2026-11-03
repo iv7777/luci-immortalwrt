@@ -1,0 +1,516 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: luci-app-tailscale-plus\n"
+"Language: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "The interface tailscale0 does not exist. Tailscale is not running."
+msgstr ""
+
+msgid "Interface"
+msgstr ""
+
+msgid "State"
+msgstr ""
+
+msgid "Addresses"
+msgstr ""
+
+msgid "MTU"
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+msgid "packets"
+msgstr ""
+
+msgid "errors"
+msgstr ""
+
+msgid "dropped"
+msgstr ""
+
+msgid "Transmitted"
+msgstr ""
+
+msgid "(no output)"
+msgstr ""
+
+msgid "Exit code: %d"
+msgstr ""
+
+msgid "Timed out while waiting for the result."
+msgstr ""
+
+msgid "Running ..."
+msgstr ""
+
+msgid "Unknown error"
+msgstr ""
+
+msgid "Error: %s"
+msgstr ""
+
+msgid "Run Network Check"
+msgstr ""
+
+msgid "choose a device"
+msgstr ""
+
+msgid "offline"
+msgstr ""
+
+msgid "or enter a Tailscale IP / device name"
+msgstr ""
+
+msgid "Choose a device or enter a target first."
+msgstr ""
+
+msgid "Ping"
+msgstr ""
+
+msgid "Tailscale Diagnostics"
+msgstr ""
+
+msgid "Network Check"
+msgstr ""
+
+msgid "Tests UDP connectivity, NAT behaviour and the latency to the Tailscale relay servers. It takes a few seconds. A direct connection between devices needs working UDP."
+msgstr ""
+
+msgid "Pings a device through Tailscale and shows whether the path is direct or goes through a relay."
+msgstr ""
+
+msgid "No Tailscale log entries yet."
+msgstr ""
+
+msgid "Tailscale Logs"
+msgstr ""
+
+msgid "The most recent Tailscale messages from the system log. This page refreshes automatically."
+msgstr ""
+
+msgid "Scroll to end"
+msgstr ""
+
+msgid "Just now"
+msgstr ""
+
+msgid "%d min ago"
+msgstr ""
+
+msgid "%d h ago"
+msgstr ""
+
+msgid "Collecting data ..."
+msgstr ""
+
+msgid "Service Status"
+msgstr ""
+
+msgid "TAILSCALE NOT FOUND"
+msgstr ""
+
+msgid "DISABLED"
+msgstr ""
+
+msgid "Tailscale is switched off. Enable it in the settings below, then click \"Save & Apply\"."
+msgstr ""
+
+msgid "NOT RUNNING"
+msgstr ""
+
+msgid "STARTING"
+msgstr ""
+
+msgid "STOPPED"
+msgstr ""
+
+msgid "Tailscale is installed but turned down (\"tailscale down\")."
+msgstr ""
+
+msgid "LOGGED OUT"
+msgstr ""
+
+msgid "Use the Login button in the \"Account\" tab to authenticate this device."
+msgstr ""
+
+msgid "WAITING FOR APPROVAL"
+msgstr ""
+
+msgid "An administrator has to approve this device in the Tailscale admin console."
+msgstr ""
+
+msgid "UNKNOWN"
+msgstr ""
+
+msgid "RUNNING"
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "Device Name"
+msgstr ""
+
+msgid "Tailscale IPv4"
+msgstr ""
+
+msgid "Tailscale IPv6"
+msgstr ""
+
+msgid "Tailnet Name"
+msgstr ""
+
+msgid "TUN Mode"
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "Disabled"
+msgstr ""
+
+msgid "Using Exit Node"
+msgstr ""
+
+msgid "Health Check"
+msgstr ""
+
+msgid "Direct"
+msgstr ""
+
+msgid "Relay"
+msgstr ""
+
+msgid "Tailscale is not running."
+msgstr ""
+
+msgid "No peer devices found."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Hostname"
+msgstr ""
+
+msgid "Tailscale IP"
+msgstr ""
+
+msgid "OS"
+msgstr ""
+
+msgid "Connection"
+msgstr ""
+
+msgid "RX"
+msgstr ""
+
+msgid "TX"
+msgstr ""
+
+msgid "Last Seen"
+msgstr ""
+
+msgid "Exit Node"
+msgstr ""
+
+msgid "Online"
+msgstr ""
+
+msgid "Offline"
+msgstr ""
+
+msgid "Now"
+msgstr ""
+
+msgid "Logged in to Tailscale."
+msgstr ""
+
+msgid "Logged in. An administrator has to approve this device in the Tailscale admin console."
+msgstr ""
+
+msgid "Complete the login in the new browser tab. This page updates automatically afterwards."
+msgstr ""
+
+msgid "Login failed: %s"
+msgstr ""
+
+msgid "Timed out while waiting for the login. Check the log and try again."
+msgstr ""
+
+msgid "Could not open a new tab. Please allow pop-ups for this site."
+msgstr ""
+
+msgid "Requesting the Tailscale login URL ... please wait."
+msgstr ""
+
+msgid "Tailscale Login"
+msgstr ""
+
+msgid "Logging in with the auth key ..."
+msgstr ""
+
+msgid "Requesting the login URL ..."
+msgstr ""
+
+msgid "Confirm Logout"
+msgstr ""
+
+msgid "Are you sure you want to log out? This disconnects this device from your tailnet and you have to authenticate again."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Logging out ..."
+msgstr ""
+
+msgid "Please wait."
+msgstr ""
+
+msgid "Logout failed: %s"
+msgstr ""
+
+msgid "Logged out."
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+msgid "Tailnet devices may access this router"
+msgstr ""
+
+msgid "Zone input policy. Needed for Tailscale SSH, the web interface or LuCI over the tailnet."
+msgstr ""
+
+msgid "LAN devices may access the tailnet"
+msgstr ""
+
+msgid "Lets LAN clients reach other tailnet devices and subnets, and use an exit node through this router."
+msgstr ""
+
+msgid "Tailnet devices may access the LAN"
+msgstr ""
+
+msgid "Required for Subnet Routing: remote devices reaching the subnets advertised by this router."
+msgstr ""
+
+msgid "Tailnet devices may access the internet through this router"
+msgstr ""
+
+msgid "Required when this router is advertised as an exit node."
+msgstr ""
+
+msgid "WAN may access the tailnet"
+msgstr ""
+
+msgid "Rarely needed. Leave this off unless you know you need it."
+msgstr ""
+
+msgid "(The required firewall zone does not exist.)"
+msgstr ""
+
+msgid "Failed to configure the firewall: %s"
+msgstr ""
+
+msgid "Firewall configuration applied. The firewall is reloading in the background."
+msgstr ""
+
+msgid "The firewall was already configured like this."
+msgstr ""
+
+msgid "Apply Firewall Settings"
+msgstr ""
+
+msgid "Creates the \"tailscale\" interface and firewall zone if needed, then allows exactly the traffic you tick below. Nothing is allowed that is not ticked. These settings are applied immediately and independently of \"Save & Apply\"."
+msgstr ""
+
+msgid "Tailscale"
+msgstr ""
+
+msgid "Tailscale is a mesh VPN that connects your devices securely. Everything is off until you enable the service below."
+msgstr ""
+
+msgid "General"
+msgstr ""
+
+msgid "Account"
+msgstr ""
+
+msgid "Firewall"
+msgstr ""
+
+msgid "Devices"
+msgstr ""
+
+msgid "Advanced"
+msgstr ""
+
+msgid "Enable Tailscale"
+msgstr ""
+
+msgid "Turns the Tailscale service on or off. When off, the daemon is stopped and does not start at boot."
+msgstr ""
+
+msgid "Name of this device in your tailnet. Leave empty to use the system hostname."
+msgstr ""
+
+msgid "Accept Routes"
+msgstr ""
+
+msgid "Accept subnet routes advertised by other devices in your tailnet."
+msgstr ""
+
+msgid "Advertise Routes"
+msgstr ""
+
+msgid "Subnets behind this router that other tailnet devices may reach (subnet router). Pick a detected subnet or enter your own in CIDR notation. The routes still have to be approved in the Tailscale admin console."
+msgstr ""
+
+msgid "Advertise Exit Node"
+msgstr ""
+
+msgid "Offer this device as an exit node for internet traffic. Ignored while an exit node is selected below. Allow \"Tailnet devices may access the internet\" in the Firewall tab."
+msgstr ""
+
+msgid "Use Exit Node"
+msgstr ""
+
+msgid "Route this router's internet traffic through another device. For LAN clients to use it, allow \"LAN devices may access the tailnet\" in the Firewall tab. If you pick a device here, \"Advertise Exit Node\" is switched off."
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "not in the current device list"
+msgstr ""
+
+msgid "Allow LAN Access"
+msgstr ""
+
+msgid "While using an exit node, keep direct access to the local network. Recommended on a router, otherwise LAN traffic is sent through the exit node."
+msgstr ""
+
+msgid "Tailscale SSH"
+msgstr ""
+
+msgid "Let Tailscale run an SSH server for this device, with access controlled by your tailnet policy."
+msgstr ""
+
+msgid "Shields Up"
+msgstr ""
+
+msgid "Block all incoming connections from the tailnet."
+msgstr ""
+
+msgid "Web Interface"
+msgstr ""
+
+msgid "Expose the Tailscale web interface on port 5252, reachable over the tailnet only."
+msgstr ""
+
+msgid "Disable SNAT for Subnet Routes"
+msgstr ""
+
+msgid "Keep the original source address for traffic to advertised subnets. Most users should leave this off. It also breaks exit node traffic."
+msgstr ""
+
+msgid "Stateful Filtering"
+msgstr ""
+
+msgid "Only forward reply traffic for subnet routers and exit nodes. Extra protection for forwarded packets."
+msgstr ""
+
+msgid "DNS Mode"
+msgstr ""
+
+msgid "Disabled: system DNS only."
+msgstr ""
+
+msgid "MagicDNS: Tailscale manages DNS settings of this device."
+msgstr ""
+
+msgid "OpenWrt Forward: dnsmasq forwards ts.net names to Tailscale (ts.net only)."
+msgstr ""
+
+msgid "OpenWrt Forward"
+msgstr ""
+
+msgid "Peer Relay"
+msgstr ""
+
+msgid "Act as a Peer Relay server for other devices. Needs a public IP address and an open UDP port."
+msgstr ""
+
+msgid "Peer Relay Port"
+msgstr ""
+
+msgid "UDP port of the Peer Relay. Open it in your firewall and NAT."
+msgstr ""
+
+msgid "Custom Login Server"
+msgstr ""
+
+msgid "Optional: URL of a custom control server such as Headscale, for example %s. Leave empty for the default Tailscale service."
+msgstr ""
+
+msgid "Enter a valid http:// or https:// URL."
+msgstr ""
+
+msgid "Auth Key"
+msgstr ""
+
+msgid "Optional: log in with an auth key instead of the browser. The key is used once and is not saved anywhere."
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Logs this device in. With an auth key it logs in directly, otherwise a login page opens in a new tab."
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+msgid "Disconnects this device from the tailnet and expires its node key."
+msgstr ""
+
+msgid "Log out"
+msgstr ""
+
+msgid "Firewall Backend"
+msgstr ""
+
+msgid "Firewall backend used by the Tailscale daemon. Applying a change restarts the daemon."
+msgstr ""
+
+msgid "Listen Port"
+msgstr ""
+
+msgid "UDP port of the daemon (default 41641). Useful when you forward a port for direct connections. Applying a change restarts the daemon."
+msgstr ""
+
+msgid "State File"
+msgstr ""
+
+msgid "Where the daemon keeps its identity. A different path creates a new device and requires a new login. Never use a path in /tmp or /var, it is lost on reboot. Applying a change restarts the daemon."
+msgstr ""
+
+msgid "Enter an absolute path without spaces."
+msgstr ""
+
+msgid "Log Standard Output"
+msgstr ""
+
+msgid "Send the daemon's regular messages to the system log."
+msgstr ""
+
+msgid "Log Errors"
+msgstr ""
+
+msgid "Send the daemon's error messages to the system log."
+msgstr ""
+
