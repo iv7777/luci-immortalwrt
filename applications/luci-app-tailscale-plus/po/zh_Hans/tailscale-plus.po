@@ -421,8 +421,8 @@ msgstr "防火墙已是此配置。"
 msgid "Apply Firewall Settings"
 msgstr "应用防火墙设置"
 
-msgid "Creates the \"tailscale\" interface and firewall zone if needed, then allows exactly the traffic you tick below. Nothing is allowed that is not ticked. These settings are applied immediately and independently of \"Save & Apply\"."
-msgstr "如有需要会创建“tailscale”接口和防火墙区域，然后仅允许下方勾选的流量，未勾选的一律不允许。这些设置会立即生效，与“保存并应用”无关。"
+msgid "Creates the \"tailscale\" interface and firewall zone if needed, and makes the forwardings between that zone and LAN/WAN match the boxes below: ticked directions are added, unticked ones are removed (also ones you created by hand). A new zone accepts its own outgoing traffic and traffic within itself, and masquerading is switched on when \"LAN devices may access the tailnet\" is ticked. These settings are applied immediately and independently of \"Save & Apply\"."
+msgstr "如有需要会创建“tailscale”接口和防火墙区域，并让该区域与 LAN/WAN 之间的转发与下方勾选项一致：勾选的方向会被添加，未勾选的会被移除（包括您手动创建的）。新建的区域允许自身发出的流量和区域内部的流量；勾选“允许局域网设备访问 Tailnet”时会启用地址伪装。这些设置会立即生效，与“保存并应用”无关。"
 
 msgid "Tailscale"
 msgstr "Tailscale"

@@ -753,9 +753,13 @@ methods.setup_firewall = {
 			u.set('firewall', zone, 'input', input);
 			u.set('firewall', zone, 'output', 'ACCEPT');
 			u.set('firewall', zone, 'forward', 'ACCEPT');
-			u.set('firewall', zone, 'masq', '1');
 			u.set('firewall', zone, 'mtu_fix', '1');
 			u.set('firewall', zone, 'network', [ 'tailscale' ]);
+
+			// masquerading is only needed for LAN -> Tailscale
+			if (want.lan_to_ts)
+				u.set('firewall', zone, 'masq', '1');
+
 			changed_firewall = true;
 		}
 		else {

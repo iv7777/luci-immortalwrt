@@ -613,7 +613,7 @@ function renderFirewall(fw) {
 	}, _('Apply Firewall Settings'));
 
 	return E('div', { 'class': 'cbi-value' }, [
-		E('p', {}, _('Creates the "tailscale" interface and firewall zone if needed, then allows exactly the traffic you tick below. Nothing is allowed that is not ticked. These settings are applied immediately and independently of "Save & Apply".')),
+		E('p', {}, _('Creates the "tailscale" interface and firewall zone if needed, and makes the forwardings between that zone and LAN/WAN match the boxes below: ticked directions are added, unticked ones are removed (also ones you created by hand). A new zone accepts its own outgoing traffic and traffic within itself, and masquerading is switched on when "LAN devices may access the tailnet" is ticked. These settings are applied immediately and independently of "Save & Apply".')),
 		E('div', {}, rows),
 		button
 	]);
