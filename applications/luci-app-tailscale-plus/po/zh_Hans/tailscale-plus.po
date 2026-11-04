@@ -85,6 +85,9 @@ msgstr "通过 Tailscale 对设备执行 Ping，并显示链路是直连还是�
 msgid "No Tailscale log entries yet."
 msgstr "暂无 Tailscale 日志。"
 
+msgid "The \"tailscale_plus\" service of rpcd is missing. Check \"logread -e rpcd\" for errors and run \"/etc/init.d/rpcd restart\"."
+msgstr "rpcd 的“tailscale_plus”服务不存在。请用“logread -e rpcd”查看错误，并执行“/etc/init.d/rpcd restart”。"
+
 msgid "Tailscale Logs"
 msgstr "Tailscale 日志"
 
@@ -108,6 +111,9 @@ msgstr "正在收集数据…"
 
 msgid "Service Status"
 msgstr "服务状态"
+
+msgid "BACKEND NOT AVAILABLE"
+msgstr "后端不可用"
 
 msgid "TAILSCALE NOT FOUND"
 msgstr "未找到 TAILSCALE"

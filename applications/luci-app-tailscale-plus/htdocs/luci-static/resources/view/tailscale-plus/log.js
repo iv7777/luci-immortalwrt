@@ -23,7 +23,10 @@ function fill(textarea, res) {
 
 return view.extend({
 	load: function() {
-		return L.resolveDefault(callGetLog(), { lines: [] });
+		return L.resolveDefault(callGetLog(), {
+			lines: [],
+			error: _('The "tailscale_plus" service of rpcd is missing. Check "logread -e rpcd" for errors and run "/etc/init.d/rpcd restart".')
+		});
 	},
 
 	render: function(res) {

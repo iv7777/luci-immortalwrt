@@ -93,6 +93,12 @@ function renderStatus(status) {
 		return E('em', {}, _('Collecting data ...'));
 
 	switch (status.status) {
+	case 'backend_error':
+		return statusRow(_('Service Status'), [
+			colored(_('BACKEND NOT AVAILABLE'), 'red'), E('br'),
+			_('The "tailscale_plus" service of rpcd is missing. Check "logread -e rpcd" for errors and run "/etc/init.d/rpcd restart".')
+		]);
+
 	case 'not_installed':
 		return statusRow(_('Service Status'), colored(_('TAILSCALE NOT FOUND'), 'red'));
 
@@ -391,7 +397,7 @@ function renderFirewall(fw) {
 return view.extend({
 	load: function() {
 		return Promise.all([
-			L.resolveDefault(callGetStatus(), { status: 'not_running', peers: [] }),
+			L.resolveDefault(callGetStatus(), { status: 'backend_error', peers: [] }),
 			L.resolveDefault(callGetSubroutes(), { routes: [] }),
 			L.resolveDefault(callGetFirewall(), null),
 			uci.load('tailscale')

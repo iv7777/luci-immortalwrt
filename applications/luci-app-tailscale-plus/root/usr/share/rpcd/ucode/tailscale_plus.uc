@@ -121,10 +121,30 @@ function ts_status() {
 	return { data: d };
 }
 
-// POSIX extended regular expressions: no backslash escapes inside brackets
-const re_url = regexp('^https?://[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+$');
-const re_authkey = regexp('^[A-Za-z0-9_.:=+/-]{4,300}$');
-const re_any_url = regexp('https?://[^[:space:]]+');
+// Regular expressions are POSIX extended ones, and OpenWrt uses musl: no
+// backslash escapes inside brackets and no repeat counts above 255 ({n,m}).
+// To be safe, none are used at all; lengths are checked separately.
+// An exception while this script loads makes rpcd drop the whole plugin
+// ("Object not found"), so patterns are compiled defensively. A pattern that
+// fails to compile rejects the input instead of breaking everything.
+function compile(source) {
+	try {
+		return regexp(source);
+	}
+	catch (e) {
+		return null;
+	}
+}
+
+function valid(re, str, min, max) {
+	return (re != null && type(str) == 'string' && length(str) >= min &&
+	        length(str) <= max && match(str, re) != null);
+}
+
+const re_url = compile('^https?://[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+$');
+const re_authkey = compile('^[A-Za-z0-9_.:=+/-]+$');
+const re_target = compile('^[A-Za-z0-9][A-Za-z0-9._:-]*$');
+const re_any_url = compile('https?://[^[:space:]]+');
 
 const backend_states = {
 	Running: 'running',
@@ -327,10 +347,10 @@ methods.start_login = {
 		let server = trim(request.args.login_server || '');
 		let key = trim(request.args.auth_key || '');
 
-		if (server != '' && !match(server, re_url))
+		if (server != '' && !valid(re_url, server, 8, 2048))
 			return { error: 'Invalid login server URL.' };
 
-		if (key != '' && !match(key, re_authkey))
+		if (key != '' && !valid(re_authkey, key, 4, 300))
 			return { error: 'Invalid auth key.' };
 
 		let st = ts_status();
@@ -383,7 +403,7 @@ methods.get_login_status = {
 		res.output = trim(log);
 
 		if (res.auth_url == '') {
-			let m = match(log, re_any_url);
+			let m = (re_any_url != null) ? match(log, re_any_url) : null;
 			if (m)
 				res.auth_url = m[0];
 		}
@@ -422,7 +442,7 @@ methods.start_diag = {
 		if (kind != 'netcheck' && kind != 'ping')
 			return { error: 'Unknown diagnostic.' };
 
-		if (kind == 'ping' && !match(target, /^[A-Za-z0-9][A-Za-z0-9._:-]{0,252}$/))
+		if (kind == 'ping' && !valid(re_target, target, 1, 253))
 			return { error: 'Invalid ping target.' };
 
 		if (ts_bin() == null)

@@ -85,6 +85,9 @@ msgstr ""
 msgid "No Tailscale log entries yet."
 msgstr ""
 
+msgid "The \"tailscale_plus\" service of rpcd is missing. Check \"logread -e rpcd\" for errors and run \"/etc/init.d/rpcd restart\"."
+msgstr ""
+
 msgid "Tailscale Logs"
 msgstr ""
 
@@ -107,6 +110,9 @@ msgid "Collecting data ..."
 msgstr ""
 
 msgid "Service Status"
+msgstr ""
+
+msgid "BACKEND NOT AVAILABLE"
 msgstr ""
 
 msgid "TAILSCALE NOT FOUND"
