@@ -76,16 +76,34 @@ function formatLastSeen(value) {
 
 // E() treats a lone string child as HTML, an array child as text. All dynamic
 // values (device names, OS, health messages ...) therefore go in as arrays.
-// Wide tables scroll sideways (portrait and landscape) instead of squeezing
-// their columns: the table keeps a minimum width inside a scrollable box.
-const NOWRAP = 'white-space:nowrap;';
+// Tables are a CSS grid of plain divs inside a box that scrolls sideways
+// (portrait and landscape). They deliberately avoid table/.table/.tr/.td/.th:
+// themes such as Argon restyle those below 1152px (cells become inline-block
+// with a 10% flex basis, header rows are hidden), which made the text of
+// neighbouring cells overlap.
+const CELL = 'padding:0.5em 0.75em; white-space:nowrap; text-align:left; border-bottom:1px solid rgba(128,128,128,0.3);';
 
-function scrollBox(table) {
-	return E('div', { 'style': 'overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%;' }, [ table ]);
+function scrollBox(content) {
+	return E('div', { 'style': 'overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%;' }, [ content ]);
 }
 
-function tableStyle(minWidth) {
-	return 'width:100%; min-width:' + minWidth + 'px; table-layout:auto;';
+// headers: array of texts, rows: array of arrays; a cell is a text, a node or
+// an array of both (dynamic text must not be passed as a lone HTML string)
+function gridTable(headers, rows) {
+	const head = E('div', { 'role': 'row', 'style': 'display:contents;' }, headers.map(function(h) {
+		return E('div', { 'role': 'columnheader', 'style': CELL + 'font-weight:600;' }, [ h ]);
+	}));
+
+	const body = rows.map(function(cells) {
+		return E('div', { 'role': 'row', 'style': 'display:contents;' }, cells.map(function(c) {
+			return E('div', { 'role': 'cell', 'style': CELL }, Array.isArray(c) ? c : [ c ]);
+		}));
+	});
+
+	return scrollBox(E('div', {
+		'role': 'table',
+		'style': 'display:grid; grid-template-columns:repeat(' + headers.length + ', auto); width:max-content; min-width:100%;'
+	}, [ head ].concat(body)));
 }
 
 function formatDate(value) {
@@ -97,11 +115,23 @@ function formatDate(value) {
 	return isNaN(t.getTime()) ? '-' : t.toLocaleDateString();
 }
 
+// Label and value side by side, also on a phone (themes stack them there,
+// which makes the status block very tall).
+function statusGrid(rows) {
+	const cells = [];
+
+	rows.forEach(function(r) {
+		cells.push(E('div', { 'style': 'font-weight:600;' }, [ r[0] ]));
+		cells.push(E('div', { 'style': 'min-width:0; overflow-wrap:anywhere;' }, Array.isArray(r[1]) ? r[1] : [ r[1] ]));
+	});
+
+	return E('div', {
+		'style': 'display:grid; grid-template-columns:max-content minmax(0, 1fr); column-gap:1.2em; row-gap:0.5em; align-items:start;'
+	}, cells);
+}
+
 function statusRow(label, value) {
-	return E('dl', { 'class': 'cbi-value' }, [
-		E('dt', {}, [ label ]),
-		E('dd', {}, Array.isArray(value) ? value : [ value ])
-	]);
+	return statusGrid([ [ label, value ] ]);
 }
 
 function escapeHtml(s) {
@@ -198,9 +228,7 @@ function renderStatus(status) {
 		rows.push([ _('Health Check'), E('span', { 'style': 'color:orange;' }, lines) ]);
 	}
 
-	return E('div', {}, rows.map(function(r) {
-		return statusRow(r[0], r[1]);
-	}));
+	return statusGrid(rows);
 }
 
 function renderConnection(peer) {
@@ -226,11 +254,7 @@ function renderDevices(status) {
 
 	const headers = [ _('Status'), _('Hostname'), _('Tailscale IP'), _('OS'), _('Connection'), _('RX'), _('TX'), _('Last Seen') ];
 
-	return scrollBox(E('table', { 'class': 'table', 'style': tableStyle(760) }, [
-		E('tr', { 'class': 'tr table-titles' }, headers.map(function(h) {
-			return E('th', { 'class': 'th', 'style': NOWRAP }, [ h ]);
-		}))
-	].concat(peers.map(function(peer) {
+	return gridTable(headers, peers.map(function(peer) {
 		const ips = [];
 
 		(peer.ips || []).forEach(function(ip, i) {
@@ -239,20 +263,20 @@ function renderDevices(status) {
 			ips.push(ip);
 		});
 
-		return E('tr', { 'class': 'tr' }, [
-			E('td', { 'class': 'td', 'style': NOWRAP }, E('span', {
+		return [
+			E('span', {
 				'style': 'color:' + (peer.exit_node ? 'blue' : (peer.online ? 'green' : 'gray')) + ';',
 				'title': (peer.exit_node ? _('Exit Node') + ', ' : '') + (peer.online ? _('Online') : _('Offline'))
-			}, peer.online ? '●' : '○')),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ E('strong', {}, [ peer.hostname + (peer.exit_node_option ? ' (' + _('Exit Node') + ')' : '') ]) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, ips),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ peer.os || '-' ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ renderConnection(peer) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ formatBytes(peer.rx) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ formatBytes(peer.tx) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ peer.online ? _('Now') : formatLastSeen(peer.last_seen) ])
-		]);
-	}))));
+			}, peer.online ? '●' : '○'),
+			E('strong', {}, [ peer.hostname + (peer.exit_node_option ? ' (' + _('Exit Node') + ')' : '') ]),
+			ips,
+			peer.os || '-',
+			renderConnection(peer),
+			formatBytes(peer.rx),
+			formatBytes(peer.tx),
+			peer.online ? _('Now') : formatLastSeen(peer.last_seen)
+		];
+	}));
 }
 
 // ---------------------------------------------------------------- accounts
@@ -287,23 +311,17 @@ function renderAccounts(acc) {
 		]);
 	}
 
-	const headers = [ _('Account'), _('Tailnet'), _('Server'), _('Added'), _('Status') ];
+	const table = gridTable([ _('Account'), _('Tailnet'), _('Server'), _('Added'), _('Status') ], profiles.map(function(p) {
+		return [
+			E('strong', {}, [ accountLabel(p) ]),
+			p.tailnet || '-',
+			serverName(p.server),
+			formatDate(p.created),
+			p.current ? _('Current') : _('Saved')
+		];
+	}));
 
-	const table = E('table', { 'class': 'table', 'style': tableStyle(640) }, [
-		E('tr', { 'class': 'tr table-titles' }, headers.map(function(h) {
-			return E('th', { 'class': 'th', 'style': NOWRAP }, [ h ]);
-		}))
-	].concat(profiles.map(function(p) {
-		return E('tr', { 'class': 'tr' }, [
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ E('strong', {}, [ accountLabel(p) ]) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ p.tailnet || '-' ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ serverName(p.server) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ formatDate(p.created) ]),
-			E('td', { 'class': 'td', 'style': NOWRAP }, [ p.current ? _('Current') : _('Saved') ])
-		]);
-	})));
-
-	const nodes = [ scrollBox(table), E('p', { 'class': 'cbi-value-description' }, _('The current account is the one used when the service starts.')) ];
+	const nodes = [ table, E('p', { 'class': 'cbi-value-description' }, _('The current account is the one used when the service starts.')) ];
 
 	if (!acc.service_enabled)
 		nodes.push(E('p', { 'class': 'cbi-value-description' }, _('Tailscale is switched off. The current account is used when you enable it.')));
