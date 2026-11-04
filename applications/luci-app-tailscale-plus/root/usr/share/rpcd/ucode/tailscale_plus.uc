@@ -252,23 +252,57 @@ methods.get_status = {
 	}
 };
 
+// Directly connected IPv4 subnets, offered as suggestions for "Advertise
+// Routes". Read from /proc/net/route, so no "ip" command is needed (the
+// BusyBox "ip" cannot print JSON, which is what ip-full was needed for).
+// Fields are tab separated; addresses and masks are little-endian hex.
 methods.get_subroutes = {
 	call: function() {
 		let routes = [];
-		let r = run('ip -j route', 5, false);
+		let text = readfile('/proc/net/route');
 
-		if (r.code == 0) {
-			let list = parse_json(r.out);
+		if (text == null)
+			return { routes: routes };
 
-			for (let route in as_list(list)) {
-				let dst = route?.dst;
+		let first = true;
 
-				// directly connected IPv4 networks, but not the Tailscale one
-				if (dst && index(dst, '/') != -1 && index(dst, '.') != -1 &&
-				    route.scope == 'link' && route.dev != 'tailscale0' &&
-				    index(routes, dst) == -1)
-					push(routes, dst);
+		for (let line in split(text, '\n')) {
+			if (first) {
+				first = false;
+				continue;
 			}
+
+			let f = filter(split(replace(line, '\t', ' '), ' '), function(x) {
+				return x != '';
+			});
+
+			if (length(f) < 8)
+				continue;
+
+			let dst = hex(f[1]);
+			let flags = hex(f[3]);
+			let mask = hex(f[7]);
+
+			if (type(dst) != 'int' || type(flags) != 'int' || type(mask) != 'int')
+				continue;
+
+			// skip: default route, host routes, routes via a gateway (flag 2),
+			// routes that are down (flag 1 unset) and the Tailscale interface
+			if (dst == 0 || mask == 0 || mask == 4294967295 || (flags & 2) != 0 ||
+			    (flags & 1) == 0 || f[0] == 'tailscale0')
+				continue;
+
+			let bits = 0;
+			for (let i = 0; i < 32; i++) {
+				if (((mask >> i) & 1) == 1)
+					bits++;
+			}
+
+			let net = sprintf('%d.%d.%d.%d/%d',
+				dst & 255, (dst >> 8) & 255, (dst >> 16) & 255, (dst >> 24) & 255, bits);
+
+			if (index(routes, net) == -1)
+				push(routes, net);
 		}
 
 		return { routes: routes };
