@@ -96,14 +96,17 @@ msgstr "暂无 Tailscale 日志。"
 msgid "The \"tailscale_plus\" service of rpcd is missing. Check \"logread -e rpcd\" for errors and run \"/etc/init.d/rpcd restart\"."
 msgstr "rpcd 的“tailscale_plus”服务不存在。请用“logread -e rpcd”查看错误，并执行“/etc/init.d/rpcd restart”。"
 
+msgid "Scroll to end"
+msgstr "滚动到末尾"
+
+msgid "Scroll to top"
+msgstr "滚动到顶部"
+
 msgid "Tailscale Logs"
 msgstr "Tailscale 日志"
 
 msgid "The most recent Tailscale messages from the system log. This page refreshes automatically."
 msgstr "系统日志中最近的 Tailscale 消息。本页会自动刷新。"
-
-msgid "Scroll to end"
-msgstr "滚动到末尾"
 
 msgid "Just now"
 msgstr "刚刚"
@@ -177,6 +180,9 @@ msgstr "Tailscale IPv6"
 msgid "Tailnet Name"
 msgstr "Tailnet 名称"
 
+msgid "Account"
+msgstr "账户"
+
 msgid "TUN Mode"
 msgstr "TUN 模式"
 
@@ -185,6 +191,9 @@ msgstr "已启用"
 
 msgid "Disabled"
 msgstr "已禁用"
+
+msgid "Key Expires"
+msgstr "密钥到期"
 
 msgid "Using Exit Node"
 msgstr "正在使用出口节点"
@@ -240,6 +249,82 @@ msgstr "离线"
 msgid "Now"
 msgstr "现在"
 
+msgid "Tailscale (default)"
+msgstr "Tailscale（默认）"
+
+msgid "(login not completed)"
+msgstr "（登录未完成）"
+
+msgid "Account information is not available."
+msgstr "无法获取账户信息。"
+
+msgid "The state file could not be read."
+msgstr "无法读取状态文件。"
+
+msgid "No account is stored on this router yet."
+msgstr "本路由器上尚未保存任何账户。"
+
+msgid "The next login will use: %s"
+msgstr "下次登录将使用：%s"
+
+msgid "Tailnet"
+msgstr "Tailnet"
+
+msgid "Server"
+msgstr "服务器"
+
+msgid "Added"
+msgstr "添加时间"
+
+msgid "Current"
+msgstr "当前"
+
+msgid "Saved"
+msgstr "已保存"
+
+msgid "The current account is the one used when the service starts."
+msgstr "当前账户即服务启动时使用的账户。"
+
+msgid "Tailscale is switched off. The current account is used when you enable it."
+msgstr "Tailscale 已关闭。启用后将使用当前账户。"
+
+msgid "Timed out while removing the profile."
+msgstr "移除配置超时。"
+
+msgid "Removing profile ..."
+msgstr "正在移除配置…"
+
+msgid "Please wait. The Tailscale service is stopped briefly."
+msgstr "请稍候。Tailscale 服务会短暂停止。"
+
+msgid "Profile removed."
+msgstr "配置已移除。"
+
+msgid "Removing the profile failed: %s"
+msgstr "移除配置失败：%s"
+
+msgid "Remove Profile"
+msgstr "移除配置"
+
+msgid "Remove the profile of %s from this router? This only deletes the login information stored here. Nothing is changed at Tailscale: the device stays in your admin console and its key stays valid. The Tailscale service is stopped and started again briefly. A backup copy of the state file is kept as %s."
+msgstr "要从本路由器移除 %s 的配置吗？这只会删除保存在本机的登录信息，Tailscale 端不会有任何变化：设备仍保留在您的管理控制台中，其密钥依然有效。Tailscale 服务会短暂停止后重新启动。状态文件的备份副本保存为 %s。"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgctxt "Tailscale profile removal"
+msgid "Remove"
+msgstr "移除"
+
+msgid "There is no profile stored on this router."
+msgstr "本路由器上没有保存任何配置。"
+
+msgid "Remove Profile from this Router"
+msgstr "从本路由器移除配置"
+
+msgid "Forgets a login profile on this router. This only deletes the login information stored here. Nothing is sent to Tailscale: the device stays listed in your Tailscale admin console and its key stays valid. Use \"Logout\" in the Account tab to leave an account properly."
+msgstr "在本路由器上忘记一个登录配置。这只会删除保存在本机的登录信息，不会向 Tailscale 发送任何内容：设备仍保留在您的 Tailscale 管理控制台中，其密钥依然有效。如需正式退出账户，请使用“账户”选项卡中的“登出”。"
+
 msgid "Logged in to Tailscale."
 msgstr "已登录 Tailscale。"
 
@@ -275,9 +360,6 @@ msgstr "确认登出"
 
 msgid "Are you sure you want to log out? This disconnects this device from your tailnet and you have to authenticate again."
 msgstr "确定要登出吗？这将使此设备与您的 tailnet 断开，需要重新验证。"
-
-msgid "Cancel"
-msgstr "取消"
 
 msgid "Logging out ..."
 msgstr "正在登出…"
@@ -350,9 +432,6 @@ msgstr "Tailscale 是一种网状 VPN，可安全地连接您的设备。在您�
 
 msgid "General"
 msgstr "常规"
-
-msgid "Account"
-msgstr "账户"
 
 msgid "Firewall"
 msgstr "防火墙"
@@ -465,6 +544,9 @@ msgstr "对等中继端口"
 msgid "UDP port of the Peer Relay. Open it in your firewall and NAT."
 msgstr "对等中继的 UDP 端口。请在防火墙和 NAT 中开放该端口。"
 
+msgid "Accounts on this Router"
+msgstr "本路由器上的账户"
+
 msgid "Custom Login Server"
 msgstr "自定义登录服务器"
 
@@ -524,4 +606,7 @@ msgstr "记录错误"
 
 msgid "Send the daemon's error messages to the system log."
 msgstr "将守护进程的错误消息发送到系统日志。"
+
+msgid "Local Profile"
+msgstr "本地配置"
 

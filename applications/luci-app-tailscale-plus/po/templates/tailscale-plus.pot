@@ -96,13 +96,16 @@ msgstr ""
 msgid "The \"tailscale_plus\" service of rpcd is missing. Check \"logread -e rpcd\" for errors and run \"/etc/init.d/rpcd restart\"."
 msgstr ""
 
+msgid "Scroll to end"
+msgstr ""
+
+msgid "Scroll to top"
+msgstr ""
+
 msgid "Tailscale Logs"
 msgstr ""
 
 msgid "The most recent Tailscale messages from the system log. This page refreshes automatically."
-msgstr ""
-
-msgid "Scroll to end"
 msgstr ""
 
 msgid "Just now"
@@ -177,6 +180,9 @@ msgstr ""
 msgid "Tailnet Name"
 msgstr ""
 
+msgid "Account"
+msgstr ""
+
 msgid "TUN Mode"
 msgstr ""
 
@@ -184,6 +190,9 @@ msgid "Enabled"
 msgstr ""
 
 msgid "Disabled"
+msgstr ""
+
+msgid "Key Expires"
 msgstr ""
 
 msgid "Using Exit Node"
@@ -240,6 +249,82 @@ msgstr ""
 msgid "Now"
 msgstr ""
 
+msgid "Tailscale (default)"
+msgstr ""
+
+msgid "(login not completed)"
+msgstr ""
+
+msgid "Account information is not available."
+msgstr ""
+
+msgid "The state file could not be read."
+msgstr ""
+
+msgid "No account is stored on this router yet."
+msgstr ""
+
+msgid "The next login will use: %s"
+msgstr ""
+
+msgid "Tailnet"
+msgstr ""
+
+msgid "Server"
+msgstr ""
+
+msgid "Added"
+msgstr ""
+
+msgid "Current"
+msgstr ""
+
+msgid "Saved"
+msgstr ""
+
+msgid "The current account is the one used when the service starts."
+msgstr ""
+
+msgid "Tailscale is switched off. The current account is used when you enable it."
+msgstr ""
+
+msgid "Timed out while removing the profile."
+msgstr ""
+
+msgid "Removing profile ..."
+msgstr ""
+
+msgid "Please wait. The Tailscale service is stopped briefly."
+msgstr ""
+
+msgid "Profile removed."
+msgstr ""
+
+msgid "Removing the profile failed: %s"
+msgstr ""
+
+msgid "Remove Profile"
+msgstr ""
+
+msgid "Remove the profile of %s from this router? This only deletes the login information stored here. Nothing is changed at Tailscale: the device stays in your admin console and its key stays valid. The Tailscale service is stopped and started again briefly. A backup copy of the state file is kept as %s."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgctxt "Tailscale profile removal"
+msgid "Remove"
+msgstr ""
+
+msgid "There is no profile stored on this router."
+msgstr ""
+
+msgid "Remove Profile from this Router"
+msgstr ""
+
+msgid "Forgets a login profile on this router. This only deletes the login information stored here. Nothing is sent to Tailscale: the device stays listed in your Tailscale admin console and its key stays valid. Use \"Logout\" in the Account tab to leave an account properly."
+msgstr ""
+
 msgid "Logged in to Tailscale."
 msgstr ""
 
@@ -274,9 +359,6 @@ msgid "Confirm Logout"
 msgstr ""
 
 msgid "Are you sure you want to log out? This disconnects this device from your tailnet and you have to authenticate again."
-msgstr ""
-
-msgid "Cancel"
 msgstr ""
 
 msgid "Logging out ..."
@@ -349,9 +431,6 @@ msgid "Tailscale is a mesh VPN that connects your devices securely. Everything i
 msgstr ""
 
 msgid "General"
-msgstr ""
-
-msgid "Account"
 msgstr ""
 
 msgid "Firewall"
@@ -465,6 +544,9 @@ msgstr ""
 msgid "UDP port of the Peer Relay. Open it in your firewall and NAT."
 msgstr ""
 
+msgid "Accounts on this Router"
+msgstr ""
+
 msgid "Custom Login Server"
 msgstr ""
 
@@ -523,5 +605,8 @@ msgid "Log Errors"
 msgstr ""
 
 msgid "Send the daemon's error messages to the system log."
+msgstr ""
+
+msgid "Local Profile"
 msgstr ""
 

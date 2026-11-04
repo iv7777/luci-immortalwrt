@@ -8,6 +8,7 @@
 #   tailscale-plus-helper login [LOGIN_SERVER] [AUTHKEY_FILE]
 #   tailscale-plus-helper diag netcheck
 #   tailscale-plus-helper diag ping TARGET
+#   tailscale-plus-helper remove-profile PROFILE_ID
 
 RUN_DIR=/var/run/tailscale-plus
 
@@ -112,11 +113,51 @@ do_diag() {
 	return "$rc"
 }
 
+# remove_profile ID: forget a login profile on this router (local only)
+do_remove_profile() {
+	local id="$1" state_file was_running=0 i=0 rc
+
+	rm -f "$RUN_DIR/profile.rc"
+	: > "$RUN_DIR/profile.out"
+	echo "$$" > "$RUN_DIR/profile.pid"
+
+	state_file="$(uci -q get tailscale.settings.state_file)"
+	[ -n "$state_file" ] || state_file=/etc/tailscale/tailscaled.state
+
+	# the state file may only be edited while the daemon is not running
+	if [ -n "$(pidof tailscaled)" ]; then
+		was_running=1
+		/etc/init.d/tailscale stop >/dev/null 2>&1
+		while [ -n "$(pidof tailscaled)" ] && [ "$i" -lt 20 ]; do
+			sleep 1
+			i=$((i + 1))
+		done
+	fi
+
+	if [ -n "$(pidof tailscaled)" ]; then
+		echo "tailscaled did not stop, nothing was changed" > "$RUN_DIR/profile.out"
+		rc=1
+	else
+		ucode /usr/libexec/tailscale-plus-profile.uc remove "$state_file" "$id" > "$RUN_DIR/profile.out" 2>&1
+		rc=$?
+	fi
+
+	# start the service again if it was running (honours "service_enabled")
+	if [ "$was_running" = "1" ] && [ -x /etc/init.d/tailscale-plus ]; then
+		/etc/init.d/tailscale-plus reload >/dev/null 2>&1
+	fi
+
+	rm -f "$RUN_DIR/profile.pid"
+	echo "$rc" > "$RUN_DIR/profile.rc"
+	return "$rc"
+}
+
 case "$1" in
 	login) do_login "$2" "$3" ;;
 	diag) do_diag "$2" "$3" ;;
+	remove-profile) do_remove_profile "$2" ;;
 	*)
-		echo "usage: $0 login [server] [authkey-file] | diag netcheck | diag ping <target>" >&2
+		echo "usage: $0 login [server] [authkey-file] | diag netcheck | diag ping <target> | remove-profile <id>" >&2
 		exit 2
 		;;
 esac

@@ -145,6 +145,7 @@ const re_url = compile('^https?://[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+$');
 const re_authkey = compile('^[A-Za-z0-9_.:=+/-]+$');
 const re_target = compile('^[A-Za-z0-9][A-Za-z0-9._:-]*$');
 const re_any_url = compile('https?://[^[:space:]]+');
+const re_id = compile('^[A-Za-z0-9]+$');
 
 const backend_states = {
 	Running: 'running',
@@ -179,6 +180,9 @@ methods.get_status = {
 			domain_name: '',
 			auth_url: '',
 			exit_node_ip: '',
+			account: '',
+			account_name: '',
+			key_expiry: '',
 			service_enabled: enabled,
 			peers: []
 		};
@@ -199,6 +203,14 @@ methods.get_status = {
 		data.domain_name = d.CurrentTailnet?.Name || '';
 		data.hostname = d.Self?.HostName || '';
 		data.exit_node_ip = d.ExitNodeStatus?.TailscaleIPs?.[0] || '';
+		data.key_expiry = d.Self?.KeyExpiry || '';
+
+		if (d.Self?.UserID != null) {
+			let profile = d.User?.[sprintf('%d', d.Self.UserID)];
+
+			data.account = profile?.LoginName || '';
+			data.account_name = profile?.DisplayName || '';
+		}
 
 		for (let ip in as_list(d.Self?.TailscaleIPs)) {
 			if (index(ip, ':') != -1) {
@@ -256,6 +268,143 @@ methods.get_status = {
 // Routes". Read from /proc/net/route, so no "ip" command is needed (the
 // BusyBox "ip" cannot print JSON, which is what ip-full was needed for).
 // Fields are tab separated; addresses and masks are little-endian hex.
+// ---------------------------------------------------------------------
+// Login profiles ("accounts") stored on this router. They are read from the
+// Tailscale state file, so this also works while the service is disabled.
+// Only account details are returned, never keys or preferences.
+// ---------------------------------------------------------------------
+
+const DEFAULT_STATE_FILE = '/etc/tailscale/tailscaled.state';
+
+function state_file_path() {
+	let u = cursor();
+
+	try {
+		u.load('tailscale');
+		return u.get('tailscale', 'settings', 'state_file') || DEFAULT_STATE_FILE;
+	}
+	catch (e) {
+		return DEFAULT_STATE_FILE;
+	}
+}
+
+function read_profiles() {
+	let res = { path: state_file_path(), exists: false, error: '', profiles: [] };
+	let raw = readfile(res.path);
+
+	if (raw == null)
+		return res;
+
+	res.exists = true;
+
+	let state = parse_json(raw);
+	if (type(state) != 'object') {
+		res.error = 'unreadable';
+		return res;
+	}
+
+	if (type(state['_profiles']) != 'string')
+		return res;
+
+	let list = parse_json(b64dec(state['_profiles']));
+	if (type(list) != 'object')
+		return res;
+
+	let current = (type(state['_current-profile']) == 'string') ? b64dec(state['_current-profile']) : null;
+
+	for (let id in list) {
+		let p = list[id];
+
+		if (type(p) != 'object')
+			continue;
+
+		push(res.profiles, {
+			id: id,
+			account: p.UserProfile?.LoginName || '',
+			display_name: p.UserProfile?.DisplayName || '',
+			tailnet: p.NetworkProfile?.DisplayName || p.NetworkProfile?.DomainName || p.NetworkProfile?.MagicDNSName || '',
+			server: p.ControlURL || '',
+			created: p.Created || '',
+			current: (current != null && p.Key == current)
+		});
+	}
+
+	res.profiles = sort(res.profiles, function(a, b) {
+		if (a.current != b.current)
+			return a.current ? -1 : 1;
+
+		return (a.id < b.id) ? -1 : (a.id > b.id) ? 1 : 0;
+	});
+
+	return res;
+}
+
+methods.get_accounts = {
+	call: function() {
+		let res = read_profiles();
+		let u = cursor();
+
+		try {
+			u.load('tailscale');
+			res.login_server = u.get('tailscale', 'settings', 'login_server') || '';
+			res.service_enabled = (u.get('tailscale', 'settings', 'service_enabled') == '1');
+		}
+		catch (e) {
+			res.login_server = '';
+			res.service_enabled = false;
+		}
+
+		return res;
+	}
+};
+
+// Forget a profile on this router. Local only, nothing is sent to Tailscale.
+// The state file is edited by a helper script while the daemon is stopped.
+methods.remove_profile = {
+	args: { id: '' },
+	call: function(request) {
+		let id = request.args.id || '';
+
+		if (!valid(re_id, id, 1, 32))
+			return { error: 'Invalid profile id.' };
+
+		let found = false;
+		for (let p in read_profiles().profiles) {
+			if (p.id == id) {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+			return { error: 'This profile does not exist (any more).' };
+
+		if (pid_alive(RUN_DIR + '/profile.pid'))
+			return { error: 'A profile is already being removed.' };
+
+		mkdir(RUN_DIR, 448);
+		unlink(RUN_DIR + '/profile.rc');
+		unlink(RUN_DIR + '/profile.out');
+
+		run_detached(HELPER + ' remove-profile ' + shell_quote(id));
+
+		return { started: true };
+	}
+};
+
+methods.get_profile_op = {
+	call: function() {
+		let rc = trim(readfile(RUN_DIR + '/profile.rc') || '');
+
+		return {
+			running: pid_alive(RUN_DIR + '/profile.pid'),
+			done: (rc != ''),
+			rc: (rc != '') ? int(rc) : null,
+			output: trim(readfile(RUN_DIR + '/profile.out', 2048) || '')
+		};
+	}
+};
+
 methods.get_subroutes = {
 	call: function() {
 		let routes = [];

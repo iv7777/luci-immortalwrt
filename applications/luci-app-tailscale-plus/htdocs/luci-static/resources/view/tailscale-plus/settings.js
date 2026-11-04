@@ -28,9 +28,14 @@ const callStartLogin = rpc.declare({
 });
 const callGetLoginStatus = rpc.declare({ object: 'tailscale_plus', method: 'get_login_status' });
 const callLogout = rpc.declare({ object: 'tailscale_plus', method: 'do_logout' });
+const callGetAccounts = rpc.declare({ object: 'tailscale_plus', method: 'get_accounts' });
+const callRemoveProfile = rpc.declare({ object: 'tailscale_plus', method: 'remove_profile', params: [ 'id' ] });
+const callGetProfileOp = rpc.declare({ object: 'tailscale_plus', method: 'get_profile_op' });
 
 const STATUS_ID = 'tailscale_plus_status';
 const DEVICES_ID = 'tailscale_plus_devices';
+const ACCOUNTS_ID = 'tailscale_plus_accounts';
+const REMOVE_ID = 'tailscale_plus_profile_remove';
 
 let map = null;
 
@@ -71,6 +76,27 @@ function formatLastSeen(value) {
 
 // E() treats a lone string child as HTML, an array child as text. All dynamic
 // values (device names, OS, health messages ...) therefore go in as arrays.
+// Wide tables scroll sideways (portrait and landscape) instead of squeezing
+// their columns: the table keeps a minimum width inside a scrollable box.
+const NOWRAP = 'white-space:nowrap;';
+
+function scrollBox(table) {
+	return E('div', { 'style': 'overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%;' }, [ table ]);
+}
+
+function tableStyle(minWidth) {
+	return 'width:100%; min-width:' + minWidth + 'px; table-layout:auto;';
+}
+
+function formatDate(value) {
+	if (!value || value.indexOf('0001-01-01') === 0)
+		return '-';
+
+	const t = new Date(value);
+
+	return isNaN(t.getTime()) ? '-' : t.toLocaleDateString();
+}
+
 function statusRow(label, value) {
 	return E('dl', { 'class': 'cbi-value' }, [
 		E('dt', {}, [ label ]),
@@ -147,8 +173,15 @@ function renderStatus(status) {
 		[ _('Tailscale IPv4'), status.ipv4 || '-' ],
 		[ _('Tailscale IPv6'), status.ipv6 || '-' ],
 		[ _('Tailnet Name'), status.domain_name || '-' ],
+		[ _('Account'), (status.account_name && status.account) ? status.account_name + ' (' + status.account + ')' : (status.account || status.account_name || '-') ],
 		[ _('TUN Mode'), status.TUNMode ? _('Enabled') : _('Disabled') ]
 	];
+
+	if (status.key_expiry && status.key_expiry.indexOf('0001-01-01') !== 0) {
+		const expired = (new Date(status.key_expiry).getTime() < Date.now());
+
+		rows.push([ _('Key Expires'), E('span', { 'style': expired ? 'color:red;' : '' }, [ formatDate(status.key_expiry) ]) ]);
+	}
 
 	if (status.exit_node_ip)
 		rows.push([ _('Using Exit Node'), status.exit_node_ip ]);
@@ -193,9 +226,9 @@ function renderDevices(status) {
 
 	const headers = [ _('Status'), _('Hostname'), _('Tailscale IP'), _('OS'), _('Connection'), _('RX'), _('TX'), _('Last Seen') ];
 
-	return E('table', { 'class': 'table' }, [
+	return scrollBox(E('table', { 'class': 'table', 'style': tableStyle(760) }, [
 		E('tr', { 'class': 'tr table-titles' }, headers.map(function(h) {
-			return E('th', { 'class': 'th' }, h);
+			return E('th', { 'class': 'th', 'style': NOWRAP }, [ h ]);
 		}))
 	].concat(peers.map(function(peer) {
 		const ips = [];
@@ -207,19 +240,191 @@ function renderDevices(status) {
 		});
 
 		return E('tr', { 'class': 'tr' }, [
-			E('td', { 'class': 'td' }, E('span', {
+			E('td', { 'class': 'td', 'style': NOWRAP }, E('span', {
 				'style': 'color:' + (peer.exit_node ? 'blue' : (peer.online ? 'green' : 'gray')) + ';',
 				'title': (peer.exit_node ? _('Exit Node') + ', ' : '') + (peer.online ? _('Online') : _('Offline'))
 			}, peer.online ? '●' : '○')),
-			E('td', { 'class': 'td' }, [ E('strong', {}, [ peer.hostname + (peer.exit_node_option ? ' (' + _('Exit Node') + ')' : '') ]) ]),
-			E('td', { 'class': 'td' }, ips),
-			E('td', { 'class': 'td' }, [ peer.os || '-' ]),
-			E('td', { 'class': 'td' }, [ renderConnection(peer) ]),
-			E('td', { 'class': 'td' }, [ formatBytes(peer.rx) ]),
-			E('td', { 'class': 'td' }, [ formatBytes(peer.tx) ]),
-			E('td', { 'class': 'td' }, [ peer.online ? _('Now') : formatLastSeen(peer.last_seen) ])
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ E('strong', {}, [ peer.hostname + (peer.exit_node_option ? ' (' + _('Exit Node') + ')' : '') ]) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, ips),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ peer.os || '-' ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ renderConnection(peer) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ formatBytes(peer.rx) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ formatBytes(peer.tx) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ peer.online ? _('Now') : formatLastSeen(peer.last_seen) ])
+		]);
+	}))));
+}
+
+// ---------------------------------------------------------------- accounts
+
+function serverName(url) {
+	if (!url || /^https:\/\/controlplane\.tailscale\.com\/?$/.test(url))
+		return _('Tailscale (default)');
+
+	return url;
+}
+
+function accountLabel(p) {
+	if (p.display_name && p.account)
+		return p.display_name + ' (' + p.account + ')';
+
+	return p.account || p.display_name || _('(login not completed)');
+}
+
+function renderAccounts(acc) {
+	if (!acc)
+		return E('em', {}, _('Account information is not available.'));
+
+	if (acc.error)
+		return E('em', {}, _('The state file could not be read.'));
+
+	const profiles = acc.profiles || [];
+
+	if (profiles.length === 0) {
+		return E('div', {}, [
+			E('p', {}, _('No account is stored on this router yet.')),
+			E('p', {}, [ _('The next login will use: %s').format(serverName(acc.login_server)) ])
+		]);
+	}
+
+	const headers = [ _('Account'), _('Tailnet'), _('Server'), _('Added'), _('Status') ];
+
+	const table = E('table', { 'class': 'table', 'style': tableStyle(640) }, [
+		E('tr', { 'class': 'tr table-titles' }, headers.map(function(h) {
+			return E('th', { 'class': 'th', 'style': NOWRAP }, [ h ]);
+		}))
+	].concat(profiles.map(function(p) {
+		return E('tr', { 'class': 'tr' }, [
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ E('strong', {}, [ accountLabel(p) ]) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ p.tailnet || '-' ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ serverName(p.server) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ formatDate(p.created) ]),
+			E('td', { 'class': 'td', 'style': NOWRAP }, [ p.current ? _('Current') : _('Saved') ])
 		]);
 	})));
+
+	const nodes = [ scrollBox(table), E('p', { 'class': 'cbi-value-description' }, _('The current account is the one used when the service starts.')) ];
+
+	if (!acc.service_enabled)
+		nodes.push(E('p', { 'class': 'cbi-value-description' }, _('Tailscale is switched off. The current account is used when you enable it.')));
+
+	return E('div', {}, nodes);
+}
+
+function waitProfileOp(tries) {
+	return L.resolveDefault(callGetProfileOp(), null).then(function(res) {
+		if (res && res.done)
+			return res;
+
+		if (tries >= 80)
+			throw new Error(_('Timed out while removing the profile.'));
+
+		return new Promise(function(resolve) {
+			window.setTimeout(resolve, 1500);
+		}).then(function() {
+			return waitProfileOp(tries + 1);
+		});
+	});
+}
+
+function refreshAccounts() {
+	return Promise.all([
+		L.resolveDefault(callGetAccounts(), null),
+		L.resolveDefault(callGetStatus(), null)
+	]).then(function(res) {
+		const accNode = document.getElementById(ACCOUNTS_ID);
+		const rmNode = document.getElementById(REMOVE_ID);
+		const stNode = document.getElementById(STATUS_ID);
+		const devNode = document.getElementById(DEVICES_ID);
+
+		if (accNode && res[0])
+			accNode.replaceChildren(renderAccounts(res[0]));
+
+		if (rmNode && res[0])
+			rmNode.replaceChildren(renderProfileRemoval(res[0]));
+
+		if (res[1] && stNode)
+			stNode.replaceChildren(renderStatus(res[1]));
+
+		if (res[1] && devNode)
+			devNode.replaceChildren(renderDevices(res[1]));
+	});
+}
+
+function doRemoveProfile(id) {
+	ui.showModal(_('Removing profile ...'), [
+		E('p', { 'class': 'spinning' }, _('Please wait. The Tailscale service is stopped briefly.'))
+	]);
+
+	return callRemoveProfile(id).then(function(res) {
+		if (!res || res.error)
+			throw new Error((res && res.error) || _('Unknown error'));
+
+		return waitProfileOp(0);
+	}).then(function(op) {
+		ui.hideModal();
+
+		if (op.rc !== 0)
+			throw new Error(op.output || _('Unknown error'));
+
+		notify(_('Profile removed.'), 'info');
+		return refreshAccounts();
+	}).catch(function(err) {
+		ui.hideModal();
+		notify(_('Removing the profile failed: %s').format(err.message || err), 'error', 12000);
+		return refreshAccounts();
+	});
+}
+
+function confirmRemoveProfile(profile, path) {
+	ui.showModal(_('Remove Profile'), [
+		E('p', {}, [ _('Remove the profile of %s from this router? This only deletes the login information stored here. Nothing is changed at Tailscale: the device stays in your admin console and its key stays valid. The Tailscale service is stopped and started again briefly. A backup copy of the state file is kept as %s.').format(accountLabel(profile), path + '.bak') ]),
+		E('div', { 'class': 'right' }, [
+			E('button', { 'class': 'cbi-button', 'click': ui.hideModal }, _('Cancel')),
+			' ',
+			E('button', {
+				'class': 'cbi-button cbi-button-negative',
+				'click': function() {
+					ui.hideModal();
+					return doRemoveProfile(profile.id);
+				}
+			}, _('Remove', 'Tailscale profile removal'))
+		])
+	]);
+}
+
+function renderProfileRemoval(acc) {
+	if (!acc || acc.error)
+		return E('em', {}, _('Account information is not available.'));
+
+	const profiles = acc.profiles || [];
+
+	if (profiles.length === 0)
+		return E('p', {}, _('There is no profile stored on this router.'));
+
+	const select = E('select', { 'class': 'cbi-input-select' }, profiles.map(function(p) {
+		return E('option', { 'value': p.id }, [ accountLabel(p) + (p.current ? ' - ' + _('Current') : '') ]);
+	}));
+
+	const current = profiles.filter(function(p) { return p.current; })[0];
+	if (current)
+		select.value = current.id;
+
+	const button = E('button', {
+		'class': 'cbi-button cbi-button-negative',
+		'click': function(ev) {
+			ev.preventDefault();
+
+			const chosen = profiles.filter(function(p) { return p.id === select.value; })[0];
+			if (chosen)
+				confirmRemoveProfile(chosen, acc.path || '/etc/tailscale/tailscaled.state');
+		}
+	}, _('Remove Profile from this Router'));
+
+	return E('div', {}, [
+		E('p', { 'class': 'cbi-value-description' }, [ _('Forgets a login profile on this router. This only deletes the login information stored here. Nothing is sent to Tailscale: the device stays listed in your Tailscale admin console and its key stays valid. Use "Logout" in the Account tab to leave an account properly.') ]),
+		E('p', {}, [ select, ' ', button ])
+	]);
 }
 
 function notify(message, level, timeout) {
@@ -233,7 +438,7 @@ function pollLogin(win, useKey, tries) {
 			if (win)
 				win.close();
 			notify(_('Logged in to Tailscale.'), 'info');
-			return;
+			return refreshAccounts();
 		}
 
 		if (res && res.state === 'needs_machine_auth') {
@@ -324,6 +529,8 @@ function doLogout() {
 							notify(_('Logout failed: %s').format(res.error), 'error');
 						else
 							notify(_('Logged out.'), 'info');
+
+						return refreshAccounts();
 					}).catch(function(err) {
 						ui.hideModal();
 						notify(_('Logout failed: %s').format(err.message || err), 'error');
@@ -400,7 +607,8 @@ return view.extend({
 			L.resolveDefault(callGetStatus(), { status: 'backend_error', peers: [] }),
 			L.resolveDefault(callGetSubroutes(), { routes: [] }),
 			L.resolveDefault(callGetFirewall(), null),
-			uci.load('tailscale')
+			uci.load('tailscale'),
+			L.resolveDefault(callGetAccounts(), null)
 		]).then(function(data) {
 			// make sure the section exists, even if the package default config is gone
 			if (uci.get('tailscale', 'settings') === null)
@@ -414,6 +622,7 @@ return view.extend({
 		const status = data[0] || {};
 		const subroutes = (data[1] && data[1].routes) || [];
 		const firewall = data[2];
+		const accounts = data[4];
 
 		let s, o;
 
@@ -524,6 +733,14 @@ return view.extend({
 		o.depends('enable_relay', '1');
 
 		// ---------------------------------------------------------- Account
+		o = s.taboption('account', form.DummyValue, '_accounts');
+		o.render = function() {
+			return E('div', { 'class': 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, [ _('Accounts on this Router') ]),
+				E('div', { 'class': 'cbi-value-field', 'id': ACCOUNTS_ID }, renderAccounts(accounts))
+			]);
+		};
+
 		const loginServer = s.taboption('account', form.Value, 'login_server', _('Custom Login Server'),
 			_('Optional: URL of a custom control server such as Headscale, for example %s. Leave empty for the default Tailscale service.').format('https://headscale.example.com'));
 		loginServer.datatype = 'string';
@@ -616,20 +833,17 @@ return view.extend({
 		o.rmempty = false;
 		o.default = o.enabled;
 
+		o = s.taboption('advanced', form.DummyValue, '_profile_remove');
+		o.render = function() {
+			return E('div', { 'class': 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, [ _('Local Profile') ]),
+				E('div', { 'class': 'cbi-value-field', 'id': REMOVE_ID }, renderProfileRemoval(accounts))
+			]);
+		};
+
 		return map.render().then(function(formNode) {
 			poll.add(function() {
-				return L.resolveDefault(callGetStatus(), null).then(function(res) {
-					if (!res)
-						return;
-
-					const statusNode = document.getElementById(STATUS_ID);
-					if (statusNode)
-						statusNode.replaceChildren(renderStatus(res));
-
-					const devicesNode = document.getElementById(DEVICES_ID);
-					if (devicesNode)
-						devicesNode.replaceChildren(renderDevices(res));
-				});
+				return refreshAccounts();
 			}, 10);
 
 			return E([], [

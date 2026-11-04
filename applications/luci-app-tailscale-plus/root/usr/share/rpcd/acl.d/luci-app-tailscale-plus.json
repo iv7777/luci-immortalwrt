@@ -10,10 +10,14 @@
 					"get_interface",
 					"get_login_status",
 					"get_diag",
-					"get_log"
+					"get_log",
+					"get_accounts",
+					"get_profile_op"
 				]
 			},
-			"uci": [ "tailscale" ]
+			"uci": [
+				"tailscale"
+			]
 		},
 		"write": {
 			"ubus": {
@@ -21,10 +25,13 @@
 					"start_login",
 					"do_logout",
 					"setup_firewall",
-					"start_diag"
+					"start_diag",
+					"remove_profile"
 				]
 			},
-			"uci": [ "tailscale" ]
+			"uci": [
+				"tailscale"
+			]
 		}
 	}
 }

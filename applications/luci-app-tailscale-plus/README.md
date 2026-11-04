@@ -17,7 +17,11 @@ Menu: **VPN → Tailscale** (Settings, Diagnostics, Logs).
 - Firewall helper: creates the `tailscale` interface/zone and only the
   forwardings you tick (LAN↔Tailscale, Tailscale→WAN, WAN→Tailscale, router access)
 - Diagnostics: interface counters, `tailscale netcheck`, `tailscale ping`
-- Logs page (`logread -e tailscale`)
+- Logs page (`logread -e tailscale`) with scroll-to-end / scroll-to-top buttons
+- Account tab: shows the account(s) stored on this router (also while the
+  service is disabled), the current account and which server the next login uses
+- Advanced → Local Profile: removes a login profile from this router only
+  (see below)
 - Advanced: daemon port, state file, firewall backend, log switches
 
 ## Disabled by default
@@ -39,6 +43,21 @@ kept running and its own settings are left alone until you save once from LuCI.
   logs and diagnostics through ubus only; no command `exec` ACLs are needed.
   Slow commands (login, netcheck, ping) run through
   `/usr/libexec/tailscale-plus-helper` so rpcd never blocks.
+
+## Local profile removal
+
+*Advanced → Local Profile* forgets a login profile on this router. It is purely
+local: nothing is sent to Tailscale, the device stays listed in the Tailscale
+admin console and its key stays valid. (*Logout* in the Account tab is the
+proper way to leave an account: it tells Tailscale and expires the device key.)
+
+Removing a profile edits the Tailscale state file, exactly what tailscaled does
+itself when it deletes a profile: the daemon is stopped, `<state file>.bak` is
+written, the profile entry (and the current-profile pointer if needed) is
+removed, and the daemon is started again if the service is enabled. If no
+profile is left the legacy `_daemon` entry is removed too, because tailscaled
+would otherwise migrate the old login back. Nothing is changed unless the file
+parses and looks as expected (`/usr/libexec/tailscale-plus-profile.uc`).
 
 ## Notes
 
