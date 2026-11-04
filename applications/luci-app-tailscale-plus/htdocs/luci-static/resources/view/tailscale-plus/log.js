@@ -8,17 +8,23 @@
 // Log page of luci-app-tailscale-plus: the Tailscale related lines of the
 // system log. The backend runs "logread -e tailscale" and returns the most
 // recent lines, so no file or command access is needed in the browser.
+//
+// Like LuCI's own system log, the whole log is shown and the page scrolls:
+// "Scroll to end" sits above the log and jumps to the button below it, and
+// "Scroll to top" sits below the log and jumps back up.
 
 const callGetLog = rpc.declare({ object: 'tailscale_plus', method: 'get_log' });
 
 const LOG_ID = 'tailscale_plus_log';
+const MIN_ROWS = 10;
+const MAX_ROWS = 400;
 
 function fill(textarea, res) {
 	const lines = (res && res.lines) || [];
 
 	// set .value, never innerHTML: log lines are not trusted
 	textarea.value = lines.length ? lines.join('\n') : (res && res.error) || _('No Tailscale log entries yet.');
-	textarea.rows = Math.max(10, Math.min(lines.length + 1, 40));
+	textarea.rows = Math.max(MIN_ROWS, Math.min(lines.length + 1, MAX_ROWS));
 }
 
 return view.extend({
@@ -39,6 +45,20 @@ return view.extend({
 
 		fill(textarea, res);
 
+		const scrollDownButton = E('button', {
+			'class': 'cbi-button cbi-button-neutral',
+			'click': function() {
+				scrollUpButton.scrollIntoView();
+			}
+		}, _('Scroll to end'));
+
+		const scrollUpButton = E('button', {
+			'class': 'cbi-button cbi-button-neutral',
+			'click': function() {
+				scrollDownButton.scrollIntoView();
+			}
+		}, _('Scroll to top'));
+
 		poll.add(function() {
 			return L.resolveDefault(callGetLog(), null).then(function(r) {
 				const el = document.getElementById(LOG_ID);
@@ -52,13 +72,9 @@ return view.extend({
 			E('h2', {}, _('Tailscale Logs')),
 			E('p', {}, _('The most recent Tailscale messages from the system log. This page refreshes automatically.')),
 			E('div', { 'class': 'cbi-section' }, [
-				E('p', {}, E('button', {
-					'class': 'cbi-button cbi-button-neutral',
-					'click': function() {
-						textarea.scrollTop = textarea.scrollHeight;
-					}
-				}, _('Scroll to end'))),
-				textarea
+				E('div', { 'style': 'padding-bottom:20px;' }, [ scrollDownButton ]),
+				textarea,
+				E('div', { 'style': 'padding-top:20px;' }, [ scrollUpButton ])
 			])
 		]);
 	},
