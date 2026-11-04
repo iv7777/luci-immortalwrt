@@ -4,9 +4,11 @@ msgstr "Content-Type: text/plain; charset=UTF-8\n"
 "Language: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgctxt "Tailscale interface state"
 msgid "Up"
 msgstr ""
 
+msgctxt "Tailscale interface state"
 msgid "Down"
 msgstr ""
 
@@ -488,9 +490,6 @@ msgid "Log in"
 msgstr ""
 
 msgid "Disconnects this device from the tailnet and expires its node key."
-msgstr ""
-
-msgid "Log out"
 msgstr ""
 
 msgid "Firewall Backend"

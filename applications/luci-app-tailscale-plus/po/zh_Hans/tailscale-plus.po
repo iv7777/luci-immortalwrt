@@ -4,9 +4,11 @@ msgstr "Content-Type: text/plain; charset=UTF-8\n"
 "Language: zh_Hans\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgctxt "Tailscale interface state"
 msgid "Up"
 msgstr "已启动"
 
+msgctxt "Tailscale interface state"
 msgid "Down"
 msgstr "已关闭"
 
@@ -489,9 +491,6 @@ msgstr "登录"
 
 msgid "Disconnects this device from the tailnet and expires its node key."
 msgstr "使此设备与 tailnet 断开，并使其节点密钥过期。"
-
-msgid "Log out"
-msgstr "登出"
 
 msgid "Firewall Backend"
 msgstr "防火墙后端"

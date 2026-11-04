@@ -47,10 +47,10 @@ function row(label, value) {
 // "unknown" for them, so the administrative up flag decides.
 function stateLabel(iface) {
 	if (iface.operstate === 'up' || (iface.operstate === 'unknown' && iface.up))
-		return _('Up');
+		return _('Up', 'Tailscale interface state');
 
 	if (iface.operstate === 'down' || iface.up === false)
-		return _('Down');
+		return _('Down', 'Tailscale interface state');
 
 	return iface.operstate || '-';
 }

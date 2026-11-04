@@ -563,7 +563,7 @@ return view.extend({
 
 		o = s.taboption('account', form.Button, '_logout', _('Logout'),
 			_('Disconnects this device from the tailnet and expires its node key.'));
-		o.inputtitle = _('Log out');
+		o.inputtitle = _('Logout');
 		o.inputstyle = 'negative';
 		o.onclick = function() {
 			return doLogout();
