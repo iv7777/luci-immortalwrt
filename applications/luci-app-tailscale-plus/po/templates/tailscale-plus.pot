@@ -4,6 +4,12 @@ msgstr "Content-Type: text/plain; charset=UTF-8\n"
 "Language: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "Up"
+msgstr ""
+
+msgid "Down"
+msgstr ""
+
 msgid "The interface tailscale0 does not exist. Tailscale is not running."
 msgstr ""
 

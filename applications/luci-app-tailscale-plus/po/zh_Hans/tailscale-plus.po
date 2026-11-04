@@ -4,6 +4,12 @@ msgstr "Content-Type: text/plain; charset=UTF-8\n"
 "Language: zh_Hans\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+msgid "Up"
+msgstr "已启动"
+
+msgid "Down"
+msgstr "已关闭"
+
 msgid "The interface tailscale0 does not exist. Tailscale is not running."
 msgstr "接口 tailscale0 不存在，Tailscale 未运行。"
 

@@ -43,6 +43,18 @@ function row(label, value) {
 	]);
 }
 
+// TUN devices have no carrier detection: the kernel reports operstate
+// "unknown" for them, so the administrative up flag decides.
+function stateLabel(iface) {
+	if (iface.operstate === 'up' || (iface.operstate === 'unknown' && iface.up))
+		return _('Up');
+
+	if (iface.operstate === 'down' || iface.up === false)
+		return _('Down');
+
+	return iface.operstate || '-';
+}
+
 function renderInterface(iface, status) {
 	if (!iface || !iface.present) {
 		return E('em', {}, _('The interface tailscale0 does not exist. Tailscale is not running.'));
@@ -52,7 +64,7 @@ function renderInterface(iface, status) {
 
 	return E('table', { 'class': 'table' }, [
 		row(_('Interface'), 'tailscale0'),
-		row(_('State'), iface.operstate || '-'),
+		row(_('State'), stateLabel(iface)),
 		row(_('Addresses'), addrs || '-'),
 		row(_('MTU'), String(iface.mtu || '-')),
 		row(_('Received'), formatBytes(iface.rx_bytes) + ' (' + iface.rx_packets + ' ' + _('packets') + ', ' +

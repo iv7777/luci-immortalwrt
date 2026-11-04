@@ -296,8 +296,13 @@ methods.get_interface = {
 			return to_int(int(read_str('statistics/' + name)));
 		};
 
+		// TUN devices have no carrier detection, so the kernel always reports
+		// operstate "unknown" for them. IFF_UP (bit 0 of flags) is the real answer.
+		let flags = hex(read_str('flags'));
+
 		return {
 			present: true,
+			up: (type(flags) == 'int') && ((flags & 1) == 1),
 			operstate: read_str('operstate'),
 			mtu: to_int(int(read_str('mtu'))),
 			rx_bytes: read_num('rx_bytes'),
