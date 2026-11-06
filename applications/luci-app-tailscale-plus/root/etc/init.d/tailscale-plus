@@ -76,6 +76,27 @@ wait_daemon() {
 	return 1
 }
 
+# Restart the daemon so that its stdout/stderr switches really change.
+# A plain "restart" is not enough: while procd still knows the service it
+# keeps the output capture setting of the old instance and ignores the new
+# one. So stop it, wait until procd has dropped the service, then start it.
+restart_daemon() {
+	local i=0
+
+	/etc/init.d/tailscale stop
+
+	while [ "$i" -lt 15 ]; do
+		if [ -z "$(pidof tailscaled)" ] &&
+		   ! ubus call service list '{"name":"tailscale"}' 2>/dev/null | grep -q '"instances"'; then
+			break
+		fi
+		sleep 1
+		i=$((i + 1))
+	done
+
+	/etc/init.d/tailscale start
+}
+
 # Settings that only take effect when the daemon is (re)started.
 daemon_signature() {
 	local port state_file fw_mode std_out std_err
@@ -265,7 +286,7 @@ ensure_daemon() {
 		sig_run="$(running_signature)"
 		if [ -n "$sig_run" ] && [ "$sig_run" != "$sig_now" ]; then
 			log "daemon settings changed (running: $sig_run, wanted: $sig_now), restarting tailscaled"
-			/etc/init.d/tailscale restart
+			restart_daemon
 		fi
 	else
 		log "starting tailscaled"
