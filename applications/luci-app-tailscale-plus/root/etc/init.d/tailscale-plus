@@ -18,7 +18,7 @@ USE_PROCD=1
 START=99
 
 NAME=tailscale-plus
-SIG_FILE=/var/run/tailscale-plus.daemon
+PROC=${PROC:-/proc}
 DNS_ENTRY="/ts.net/100.100.100.100"
 DNS_ENTRY_OLD="/.ts.net/100.100.100.100"
 
@@ -88,6 +88,28 @@ daemon_signature() {
 	config_get_bool std_err settings log_stderr 1
 
 	echo "$port|$state_file|$fw_mode|$std_out|$std_err"
+}
+
+# What the running daemon was really started with, in the same format as
+# daemon_signature. It is read from /proc (command line, environment and where
+# stdout/stderr go), so it does not depend on any state file that could be
+# missing or out of date. Fails if there is no readable daemon process.
+running_signature() {
+	local pid args port state fw o e
+
+	pid="$(pidof tailscaled | cut -d' ' -f1)"
+	[ -n "$pid" ] && [ -r "$PROC/$pid/cmdline" ] || return 1
+
+	args="$(tr '\0' ' ' < "$PROC/$pid/cmdline")"
+	port="$(echo "$args" | sed -n 's/.*--port \([^ ]*\).*/\1/p')"
+	state="$(echo "$args" | sed -n 's/.*--state \([^ ]*\).*/\1/p')"
+	fw="$(tr '\0' '\n' < "$PROC/$pid/environ" 2>/dev/null | sed -n 's/^TS_DEBUG_FIREWALL_MODE=//p' | head -n1)"
+
+	# procd points the output of a process with logging switched off at /dev/null
+	[ "$(readlink "$PROC/$pid/fd/1")" = /dev/null ] && o=0 || o=1
+	[ "$(readlink "$PROC/$pid/fd/2")" = /dev/null ] && e=0 || e=1
+
+	echo "$port|$state|$fw|$o|$e"
 }
 
 dns_forward_present() {
@@ -230,18 +252,19 @@ apply_settings() {
 }
 
 ensure_daemon() {
-	local sig_now
+	local sig_now sig_run
 
 	/etc/init.d/tailscale enabled || /etc/init.d/tailscale enable
 
 	sig_now="$(daemon_signature)"
 
 	if daemon_running; then
-		# Restart only if the daemon arguments changed since it was started.
-		# Without a recorded signature the daemon was just started by the
-		# boot sequence with the current configuration.
-		if [ -f "$SIG_FILE" ] && [ "$(cat "$SIG_FILE")" != "$sig_now" ]; then
-			log "daemon settings changed, restarting tailscaled"
+		# Restart if the running daemon was started with other daemon
+		# settings (port, state file, firewall mode, log switches) than the
+		# configured ones.
+		sig_run="$(running_signature)"
+		if [ -n "$sig_run" ] && [ "$sig_run" != "$sig_now" ]; then
+			log "daemon settings changed (running: $sig_run, wanted: $sig_now), restarting tailscaled"
 			/etc/init.d/tailscale restart
 		fi
 	else
@@ -254,13 +277,11 @@ ensure_daemon() {
 		return 1
 	fi
 
-	echo "$sig_now" > "$SIG_FILE"
 	return 0
 }
 
 stop_daemon() {
 	remove_dns_forward
-	rm -f "$SIG_FILE"
 
 	if /etc/init.d/tailscale enabled || [ -n "$(pidof tailscaled)" ]; then
 		log "service disabled, stopping tailscaled"
