@@ -1,0 +1,26 @@
+#!/bin/sh
+# luci-app-tailscale-plus: keep Tailscale switched off after installation,
+# unless this device already runs a node (existing state file).
+
+[ -f /etc/config/tailscale ] || touch /etc/config/tailscale
+uci -q get tailscale.settings >/dev/null || uci -q set tailscale.settings=settings
+
+if [ -z "$(uci -q get tailscale.settings.service_enabled)" ]; then
+	state_file="$(uci -q get tailscale.settings.state_file)"
+	[ -n "$state_file" ] || state_file=/etc/tailscale/tailscaled.state
+
+	if [ -s "$state_file" ]; then
+		# existing node: keep it running, its own settings stay untouched
+		uci -q set tailscale.settings.service_enabled=1
+	else
+		uci -q set tailscale.settings.service_enabled=0
+		if [ -x /etc/init.d/tailscale ]; then
+			/etc/init.d/tailscale stop >/dev/null 2>&1
+			/etc/init.d/tailscale disable >/dev/null 2>&1
+		fi
+	fi
+	uci -q commit tailscale
+fi
+
+rm -f /tmp/luci-indexcache
+exit 0
